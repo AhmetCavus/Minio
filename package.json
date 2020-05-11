@@ -1,5 +1,5 @@
 {
-  "name": "merntodo",
+  "name": "Minio",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -23,6 +23,6 @@
   "scripts": {
     "test": "mocha './src/**/*.test.js'"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Ahmet Cavus",
+  "license": "MIT"
 }
