@@ -32,16 +32,20 @@ class MongoAdapter {
   }
 
   createConnectionString = config => {
-    const { dbUser, dbPass, hostname, dbPort, dbName, authDb } = config
+    const { dbUser, dbPass, dbHost, dbPort, dbName, authDb } = config
     if (_.isEmpty(dbUser) || _.isEmpty(dbPass)) {
-      return f("mongodb://%s:%d/%s", hostname, dbPort, dbName)
+      return f(
+        "mongodb://%s:%d/%s?retryWrites=true&w=majority",
+        dbHost,
+        dbPort,
+        dbName
+      )
     } else {
       return f(
-        "mongodb://%s:%s@%s:%d/%s?authSource=%s",
+        "mongodb+srv://%s:%s@%s/%s?authSource=%s&retryWrites=true&w=majority",
         dbUser,
         dbPass,
-        hostname,
-        dbPort,
+        dbHost,
         dbName,
         authDb
       )
