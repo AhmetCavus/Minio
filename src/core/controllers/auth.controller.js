@@ -1,27 +1,22 @@
-﻿const tokenService = require("../services/token.service")()
-const responseService = require("../services/response.service")()
-const credentialsRepo = require("../repositories/credential.repository")()
+﻿const bcrypt = require("bcrypt")
 
-module.exports = {
-  authenticateAction: authenticateAction,
-  createAction: createAction,
+const credentialsRepo = require("../repositories/credential.repository")
+
+exports.authenticate = async (req, res, next) => {
+  try {
+    const credential = await credentialsRepo.find(req.body.email)
+    const isMatch = await bcrypt.compare(req.body.password, credential.password)
+    if (isMatch) {
+      res.json(credential)
+    } else {
+      res.status(401).json({ error: "Invalid credentials" })
+    }
+  } catch (error) {
+    res.status(401).json(error)
+  }
 }
 
-function checkAuthAction(username, password, cb) {
-  credentialsRepo
-    .find({ clientId: username, secretId: password })
-    .then(result => cb(null, true))
-    .catch(err => cb(null, false))
-}
-
-function authenticateAction(req, res) {
-  credentialsRepo
-    .findClient(req.body)
-    .then(result => onAuthSuccess(result, res))
-    .catch(err => onAuthFail(err, res))
-}
-
-function createAction(req, res) {
+exports.register = (req, res) => {
   credentialsRepo
     .findAdmin(req.body)
     .then(result => onCreateSuccess(result, res))
@@ -54,10 +49,4 @@ function createSuccessResponse(profile) {
 
 function createFailResponse(error) {
   return responseService.createFail("error", error)
-}
-
-function getUnauthorizedResponse(req) {
-  return req.auth
-    ? createFailResponse("Credentials with " + req.auth.user + " rejected")
-    : createFailResponse("No credentials provided")
 }

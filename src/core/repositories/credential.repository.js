@@ -18,19 +18,12 @@ class CredentialsRepository {
     })
   }
 
-  find(email, password) {
+  find(email) {
     return new Promise((resolve, reject) => {
       Credential.model
         .findOne({ email: email })
         .then(client => {
-          return client._.password.compare(password)
-        })
-        .then(isMatch => {
-          if (isMatch) {
-            resolve(client)
-          } else {
-            reject("Invalid credentials")
-          }
+          resolve(client)
         })
         .catch(err => {
           reject(err)

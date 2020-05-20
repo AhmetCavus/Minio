@@ -11,6 +11,7 @@ const DbAdapterFactory = require("./db/db.adapter.factory")
 const DbSchemaFactory = require("./db/db.schema.factory")
 const DbService = require("./db/db.service")
 const adminRoutes = require("./routes/admin.route")
+const authRoutes = require("./routes/auth.route")
 const authMiddleware = require("./middleware/auth")
 const Credential = require("./models/credential.model")
 const credentialsRepo = require("./repositories/credential.repository")
@@ -32,6 +33,7 @@ class MinioApp {
     app.use(bodyParser.json({ extended: false }))
     app.use(morgan("common"))
     app.use("/admin", authMiddleware, adminRoutes)
+    app.use("/authenticate", authRoutes)
   }
 
   collection(name) {
