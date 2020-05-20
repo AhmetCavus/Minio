@@ -1,5 +1,5 @@
 {
-  "name": "Minio",
+  "name": "minio",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,10 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "mongoose": "^5.9.11",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "multer": "^1.4.2",
+    "socketio": "^1.0.0",
+    "socketio-jwt": "^4.5.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
@@ -21,7 +24,8 @@
     "sinon": "^9.0.2"
   },
   "scripts": {
-    "test": "mocha './src/**/*.test.js'"
+    "test": "mocha './src/**/*.test.js'",
+    "start": "node sandbox/index.js"
   },
   "author": "Ahmet Cavus",
   "license": "MIT"
