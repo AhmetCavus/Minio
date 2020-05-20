@@ -11,7 +11,9 @@ const DbAdapterFactory = require("./db/db.adapter.factory")
 const DbSchemaFactory = require("./db/db.schema.factory")
 const DbService = require("./db/db.service")
 const adminRoutes = require("./routes/admin.route")
-const auth = require("./middleware/auth")
+const authMiddleware = require("./middleware/auth")
+const Credential = require("./models/credential.model")
+const credentialsRepo = require("./repositories/credential.repository")
 
 class MinioApp {
   constructor() {
@@ -29,7 +31,7 @@ class MinioApp {
     app.use(express.static(path.join(this.mainDir, "public")))
     app.use(bodyParser.json({ extended: false }))
     app.use(morgan("common"))
-    app.use("/admin", auth, adminRoutes)
+    app.use("/admin", authMiddleware, adminRoutes)
   }
 
   collection(name) {
@@ -40,6 +42,7 @@ class MinioApp {
     try {
       await this.connectToDb()
       this.collections = await this.resolveCollections()
+      await this.ensureCredentialsCollectionCreated()
       await this.startServer()
     } catch (error) {
       console.log(error)
@@ -71,6 +74,19 @@ class MinioApp {
       : path.join(this.mainDir, modelDir)
     const collections = await this.schemaService.resolveCollections(pathToLook)
     return this.dbService.registerCollections(collections)
+  }
+
+  ensureCredentialsCollectionCreated = async () => {
+    this.schemaService.createSchemas([Credential])
+    this.dbService.registerCollections([Credential])
+    if (await credentialsRepo.isInitialized()) return
+    const result = await credentialsRepo.create({
+      name: process.env.ROOT_CLIENT,
+      email: process.env.ROOT_EMAIL,
+      password: process.env.ROOT_SECRET,
+      role: "Admin",
+    })
+    if (result.errors) throw new Error(result.errors)
   }
 }
 
