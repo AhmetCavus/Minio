@@ -5,12 +5,12 @@ const onDisconnect = Symbol("onDisconnect")
 
 const _ = require("lodash")
 const jwt = require("jsonwebtoken")
+const socketioJwt = require("socketio-jwt")
 
 const SOCKET = require("./socket.key")
-const emitQueue = require("../connection/emitQueue")()
-const socketioJwt = require("socketio-jwt")
-const channelRepo = require("../../repositories/channel.repository")()
-const collectRepo = require("../../repositories/collection.repository")()
+const emitQueue = require("../services/emit.queue")
+const collectionRepo = require("./../repositories/collection.repository")
+const channelRepo = require("./../repositories/channel.repository")
 
 class SocketService {
   get isInitialized() {
@@ -24,7 +24,7 @@ class SocketService {
   }
 
   init(server) {
-    this._io = require("socket.io").listen(server)
+    this._io = require("socket.io")(server)
 
     this._io.use(
       socketioJwt.authorize({
@@ -134,38 +134,38 @@ class SocketService {
   [onConnection](channel, socket) {
     var self = this
 
-    socket.once(SOCKET.COMMAND_SEND_BROADCAST, data => {
-      channelRepo.sendBroadCast(data, channel, socket)
+    socket.on(SOCKET.COMMAND_SEND_BROADCAST, data => {
+      channelRepo.broadCast(data, channel, socket)
     })
-    socket.once(SOCKET.COMMAND_REQUEST_AI_DATA, data => {
+    socket.on(SOCKET.COMMAND_REQUEST_AI_DATA, data => {
       channelRepo.requestAiData(data, socket)
     })
-    socket.once(SOCKET.COMMAND_REQUEST_COLLECTION, data => {
+    socket.on(SOCKET.COMMAND_REQUEST_COLLECTION, data => {
       channelRepo.requestCollection(data, socket)
     })
-    socket.once(SOCKET.COMMAND_SEND_PRIVATE_MESSAGE, data => {
+    socket.on(SOCKET.COMMAND_SEND_PRIVATE_MESSAGE, data => {
       channelRepo.sendPrivateMessage(data, channel, socket)
     })
-    socket.once(SOCKET.COMMAND_COLLECTION_ADD_ITEM, data => {
+    socket.on(SOCKET.COMMAND_COLLECTION_ADD_ITEM, data => {
       channelRepo.addItem(data, channel, socket)
     })
-    socket.once(SOCKET.COMMAND_COLLECTION_REMOVE_ITEM, data => {
+    socket.on(SOCKET.COMMAND_COLLECTION_REMOVE_ITEM, data => {
       this._listener.removeItem(data, channel, socket)
     })
-    socket.once(SOCKET.COMMAND_COLLECTION_UPDATE_ITEM, data => {
+    socket.on(SOCKET.COMMAND_COLLECTION_UPDATE_ITEM, data => {
       this._listener.update(data, channel, socket)
     })
-    socket.once(SOCKET.COMMAND_UPDATE, data => {
+    socket.on(SOCKET.COMMAND_UPDATE, data => {
       this.channelRepo.update(data, channel, socket)
     })
-    socket.once(SOCKET.COMMAND_USE_API, data => {
+    socket.on(SOCKET.COMMAND_USE_API, data => {
       this[onUseApi](data, channel, socket)
     })
-    socket.once(SOCKET.COMMAND_DISCONNECT, data => {
+    socket.on(SOCKET.COMMAND_DISCONNECT, data => {
       this[onDisconnect](data, channel, socket)
     })
 
-    socket.once(SOCKET.EVENT_DISCONNECT, function (Socket, local) {
+    socket.on(SOCKET.EVENT_DISCONNECT, function (Socket, local) {
       console.log("Disconnect invoked")
       var user = undefined
       var toFindId = this.id
@@ -175,15 +175,16 @@ class SocketService {
       })
       if (user === undefined) return
       user.isOnline = false
-      collectRepo
-        .updateItem("Client", user._id, { isOnline: false })
+
+      collectionRepo
+        .updateItem("Profile", user._id, { isOnline: false })
         .then(result => {
           console.log("Disconnected: ", user)
         })
         .catch(error => {
           console.log("Error: ", error)
         })
-      // channel.emit(SOCKET.EVENT_USER, this._users);
+      channel.emit(SOCKET.EVENT_USER, this._users)
       emitQueue.enqueue(channel, SOCKET.EVENT_USER, this._users)
     })
 
@@ -197,8 +198,8 @@ class SocketService {
     userObj.connectedSince = Date.now()
     this._users.push(userObj)
 
-    collectRepo
-      .updateItem("Client", userObj._id, {
+    collectionRepo
+      .updateItem("Profile", userObj._id, {
         connectedSince: userObj.connectedSince,
         isOnline: true,
       })
@@ -223,8 +224,4 @@ class SocketService {
   }
 }
 
-var socketService
-module.exports = () => {
-  if (!socketService) socketService = new SocketService()
-  return socketService
-}
+module.exports = new SocketService()

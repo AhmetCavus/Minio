@@ -4,11 +4,34 @@ class Collection {
     this.preDefinition = preDefinition
   }
 
+  enableSocket() {
+    this.pubSubService = require("./services/pubsub.service")()
+    this.pubSubService.createChannel(this.collectionName)
+  }
+
   convertToSchema(callback) {
     this.collectionSchema = callback(this.preDefinition)
   }
 
-  notify(channel, options) {}
+  notifyAddItemCollection(item) {
+    this.pubSubService.notifyAddItemCollection(this.collectionName, item)
+  }
+
+  notifyRemoveItem(item) {
+    this.pubSubService.notifyRemoveItem(this.collectionName, item)
+  }
+
+  notifyUpdateCollection(items) {
+    this.pubSubService.notifyUpdateCollection(this.collectionName, items)
+  }
+
+  notifyUpdateCollectionItem(item) {
+    this.pubSubService.notifyUpdateCollectionItem(this.collectionName, item)
+  }
+
+  setOnDisconnectedListener(onDisconnectListener) {
+    this.pubSubService.setOnDisconnectedListener(onDisconnectListener)
+  }
 
   get name() {
     return this.collectionName

@@ -12,9 +12,10 @@ const DbSchemaFactory = require("./db/db.schema.factory")
 const DbService = require("./db/db.service")
 const adminRoutes = require("./routes/admin.route")
 const authRoutes = require("./routes/auth.route")
+const collectionRoutes = require("./routes/collection.route")
 const authMiddleware = require("./middleware/auth")
-const Credential = require("./models/credential.model")
-const credentialsRepo = require("./repositories/credential.repository")
+const Profile = require("./models/profile.model")
+const profileRepo = require("./repositories/profile.repository")
 
 class MinioApp {
   constructor() {
@@ -31,19 +32,25 @@ class MinioApp {
     app.set("views", "views")
     app.use(express.static(path.join(this.mainDir, "public")))
     app.use(bodyParser.json({ extended: false }))
+    app.use(bodyParser.urlencoded({ extended: false }))
     app.use(morgan("common"))
-    app.use("/admin", authMiddleware, adminRoutes)
     app.use("/authenticate", authRoutes)
+    app.use("/admin", authMiddleware, adminRoutes)
+    app.use("/collection", authMiddleware, collectionRoutes)
+    module.exports.instance = this
   }
 
   collection(name) {
-    return this.collections[name]
+    return _.findLast(
+      this.collections,
+      o => _.toLower(o.collectionName) === _.toLower(name)
+    )
   }
 
   async start() {
     try {
       await this.connectToDb()
-      this.collections = await this.resolveCollections()
+      await this.resolveCollections()
       await this.ensureCredentialsCollectionCreated()
       await this.startServer()
     } catch (error) {
@@ -58,10 +65,23 @@ class MinioApp {
   startServer = () => {
     return new Promise((resolve, reject) => {
       const { hostname, port } = this.config
-      app.listen(port, hostname, () => {
-        console.log("Minio app listening on port " + port)
-        resolve()
-      })
+
+      if (process.env.ENABLE_WEBSOCKET) {
+        const server = require("http").Server(app)
+        server.listen(port, () => {
+          console.log("Minio app listening on port " + port)
+          resolve()
+        })
+        require("./services/pubsub.service")(server)
+        Object.keys(this.collections).forEach(name => {
+          this.collections[name].enableSocket()
+        })
+      } else {
+        app.listen(port, hostname, () => {
+          console.log("Minio app listening on port " + port)
+          resolve()
+        })
+      }
     })
   }
 
@@ -74,15 +94,16 @@ class MinioApp {
     let pathToLook = _.isEmpty(modelDir)
       ? path.join(this.mainDir, "models")
       : path.join(this.mainDir, modelDir)
-    const collections = await this.schemaService.resolveCollections(pathToLook)
-    return this.dbService.registerCollections(collections)
+    this.collections = await this.schemaService.resolveCollections(pathToLook)
+    return this.dbService.registerCollections(this.collections)
   }
 
   ensureCredentialsCollectionCreated = async () => {
-    this.schemaService.createSchemas([Credential])
-    this.dbService.registerCollections([Credential])
-    if (await credentialsRepo.isInitialized()) return
-    const result = await credentialsRepo.create({
+    if (!this.collection("Profile")) this.collections.push(Profile)
+    this.schemaService.createSchemas([Profile])
+    this.dbService.registerCollections([Profile])
+    if (await profileRepo.isInitialized()) return
+    const result = await profileRepo.create({
       name: process.env.ROOT_CLIENT,
       email: process.env.ROOT_EMAIL,
       password: process.env.ROOT_SECRET,
@@ -92,4 +113,4 @@ class MinioApp {
   }
 }
 
-module.exports = MinioApp
+module.exports.App = MinioApp

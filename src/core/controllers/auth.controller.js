@@ -1,52 +1,39 @@
-﻿const bcrypt = require("bcrypt")
+﻿const authService = require("./../services/auth.service")
+const responseService = require("./../services/response.service")
+const InvalidCredentialsException = require("../exceptions/invalidcredentials.exception")
+const ProfileAlreadyExistsException = require("../exceptions/profilealreadyexists.exception")
 
-const credentialsRepo = require("../repositories/credential.repository")
-
-exports.authenticate = async (req, res, next) => {
+exports.authenticate = async (req, res) => {
   try {
-    const credential = await credentialsRepo.find(req.body.email)
-    const isMatch = await bcrypt.compare(req.body.password, credential.password)
-    if (isMatch) {
-      res.json(credential)
-    } else {
-      res.status(401).json({ error: "Invalid credentials" })
-    }
+    const token = await authService.authenticate(
+      req.body.email,
+      req.body.password
+    )
+    res.json(responseService.createSuccess("token", token))
   } catch (error) {
-    res.status(401).json(error)
+    if (error instanceof InvalidCredentialsException) {
+      res.status(403).json(responseService.createFail("Invalid credentials."))
+    } else {
+      res.status(400).json(responseService.createFail(error))
+    }
   }
 }
 
-exports.register = (req, res) => {
-  credentialsRepo
-    .findAdmin(req.body)
-    .then(result => onCreateSuccess(result, res))
-    .catch(err => onCreateFail(err, res))
-}
-
-function onAuthSuccess(profile, res) {
-  res.status(200).json(createSuccessResponse(profile))
-}
-
-function onAuthFail(error, res) {
-  res.status(400).json(createFailResponse(error))
-}
-
-function onCreateSuccess(profile, res) {
-  res.status(200).json(createSuccessResponse(profile))
-}
-
-function onCreateFail(error) {
-  res.status(400).json(createFailResponse(error))
-}
-
-function createSuccessResponse(profile) {
-  var token = tokenService.signToken(JSON.stringify(profile))
-  var result = undefined
-  if (token) result = responseService.createSuccess("token", token)
-  else result = responseService.createFail("error", "Token creation failed")
-  return result
-}
-
-function createFailResponse(error) {
-  return responseService.createFail("error", error)
+exports.register = async (req, res) => {
+  try {
+    const profile = await authService.register(
+      req.body.username,
+      req.body.email,
+      req.body.password
+    )
+    res.json(responseService.createSuccess("profile", profile))
+  } catch (error) {
+    if (error instanceof ProfileAlreadyExistsException) {
+      res
+        .status(400)
+        .json(responseService.createFail("The profile already exists."))
+    } else {
+      res.status(400).json(responseService.createFail(error))
+    }
+  }
 }

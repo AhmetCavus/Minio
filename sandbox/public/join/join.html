@@ -1,0 +1,39 @@
+﻿<div class="row marketing">
+  <div class="col-md-12">
+    <div class="panel panel-default panel-primary">
+      <div class="panel-heading" style="background-color: skyblue;">
+        <h3 class="panel-title">Join Chat</h3>
+      </div>
+      <div>
+        <h5 class="panel-heading">{{ info }}</h5>
+      </div>
+      <form class="panel-body ng-pristine ng-valid" ng-submit="join()">
+        <label>
+            ClientId
+        </label>
+        <input class="input-lg form-control ng-pristine ng-valid"
+                    maxlength="41"
+                    ng-model="clientId" 
+                    type="text">
+        <br>
+        <label>
+            SecretId
+        </label>
+        <input class="input-lg form-control ng-pristine ng-valid"
+                 maxlength="20"
+                 ng-model="secretId"
+                 type="password">
+        <br>
+        <label>
+            ChannelId
+        </label>
+        <input class="input-lg form-control ng-pristine ng-valid"
+                 maxlength="20"
+                 ng-model="channelId"
+                 type="text">
+          <br>
+        <input class="btn btn-block btn-primary" type="submit" value="Join" style="font-size: 29px; background-color: skyblue;">
+      </form>
+    </div>
+  </div>
+</div>

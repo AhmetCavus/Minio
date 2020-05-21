@@ -1,0 +1,136 @@
+﻿<div class="jumbotron">
+    <h2> Welcome <b>{{profile.name.first + ' ' + profile.name.last}}</b></h2>,
+    <p>Test the CollectIO features
+    </p>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <div class='well chatbox info' id='user'>
+            <p>Users connected {{users.length +1}}</p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class='well chatbox danger' id='error'>
+            {{error}}
+        </div>
+    </div>
+</div>
+
+<!--<div class="row">
+    <div class="col-md-12">
+        <form ng-submit='useApi()'>
+            <div class='input-group'>
+                <input name="apiRequest" class='input-sm form-control' ng-model='apiRequest.' type='text' placeholder="query" />
+            </div>
+            <div class='input-group'>
+                <span class='input-group-btn'>
+					<input class='input-sm btn btn-default'
+						   type='submit'
+						   value='Send'>
+				</span>
+            </div>
+    </div>-->
+
+<div class="row">
+    <div class="col-md-12">
+        <form ng-submit='addItemToCollection()'>
+            <div class='input-group'>
+                <input name="schema" class='input-sm form-control' ng-model='schema' type='text' placeholder="Add item to collection" />
+            </div>
+            <div class='input-group'>
+                <input class='input-sm" form-control' ng-model='newItem' type='text' placeholder='New item' />
+                <span class='input-group-btn'>
+					<input class='input-sm btn btn-default'
+						   type='submit'
+						   value='Send'>
+				</span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <form ng-submit='requestCollection()'>
+            <div class='input-group'>
+                <input class='input-sm form-control' ng-model='schema' type='text' placeholder="Request collection">
+                <span class='input-group-btn'>
+					<input class='input-sm btn btn-default'
+						   type='submit'
+						   value='Send'>
+				</span>
+            </div>
+        </form>
+        <br>
+        <div class='well chatbox' id='collection'>
+            {{collection}}
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <ul class='list-unstyled'>
+            <li ng-repeat='p in privates'>
+                <i class='fa fa-comment'></i> &nbsp;
+                <b>{{p.from}} </b>: &nbsp; {{p.data}}
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <small class="marker">Other Users</small>
+        <ul class="list-unstyled">
+            <li class="user" ng-repeat="user in users track by $index">
+                <span class='label btn-mini label-default userlabel'>
+          <i class='fa fa-user'></i>
+            {{user.profile.name.first + ' ' + user.profile.name.last}}
+        </span> &nbsp;
+                <a href="#" ng-click="sendLike(user)">
+                    <i class="fa fa-thumbs-up"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-md-2">
+        <small class="marker">Likes</small>
+        <ul class="list-unstyled">
+            <li ng-repeat='username in likes track by $index'>
+                <span class='label btn-mini label-default userlabel'>
+          <i class='fa fa-thumbs-o-up'></i>
+          {{username}}
+         </span>
+                <small class="text-primary">&nbsp; sent like</small>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-md-5">
+        <form ng-submit='sendMessage()'>
+            <div class='input-group'>
+                <input class='input-sm form-control' ng-model='message' type='text' placeholder="Type a message...">
+                <span class='input-group-btn'>
+          <input class='input-sm btn btn-default'
+          type='submit'
+          value='Send'>
+        </span>
+            </div>
+        </form>
+        <br>
+        <div class='well chatbox' id='chat_history'>
+            <ul class='list-unstyled'>
+                <li ng-repeat='m in messages'>
+                    <i class='fa fa-comment'></i> &nbsp;
+                    <b>{{m.from}} </b>: &nbsp; {{m.message}}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <input class="btn btn-block btn-primary" type="button" value="{{speech}}" ng-click="OnSpeech();" style="font-size: 29px; background-color: skyblue;">
+    </div>
+</div>

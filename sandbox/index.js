@@ -1,11 +1,14 @@
-const MinioApp = require("../src/core/minio.app")
+const Minio = require("../src/core/minio.app")
 
-const minio = new MinioApp()
+const minio = new Minio.App()
 
 minio.start().then(() => {
   console.log("Minio is up and running")
 })
 
 minio.setting((app, express) => {
+  app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/public/index.html")
+  })
   app.use("/todo", require("./routes/todo.route"))
 })
