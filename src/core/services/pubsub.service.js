@@ -3,7 +3,6 @@
 class PubSubService {
   constructor(server) {
     socketService.init(server)
-    console.log("PubSub Service created")
   }
 
   createChannel(channelName) {

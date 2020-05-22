@@ -3,42 +3,64 @@
   <head>
     <base href="/" />
     <!-- <meta charset="utf-8"> -->
-    <title>Gel de ögrenme</title>
+    <title>Minio playground</title>
     <!-- <meta name="viewport" content="width=device-width"> -->
-    <link rel="stylesheet" href="included/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="included/font-awesome/css/font-awesome.css" />
-    <link rel="stylesheet" href="css/styles.css" />
+    <link href="included/bootstrap/css/bootstrap.min.css" />
+    <link href="included/font-awesome/css/font-awesome.css" />
+    <link href="css/styles.css" />
   </head>
   <body ng-app="app">
     <div class="header">
-      <div class="navbar navbar-default" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
-            <button
-              type="button"
-              class="navbar-toggle collapsed"
-              data-toggle="collapse"
-              data-target="#js-navbar-collapse"
-            >
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">Collect.IO Test Center</a>
-          </div>
-          <div class="collapse navbar-collapse" id="js-navbar-collapse"></div>
+      <nav
+        class="navbar navbar-expand-lg navbar-light bg-light"
+        role="navigation"
+      >
+        <a class="navbar-brand" href="#">Minio Playground</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" ng-href="/main"
+                >Chat <span class="sr-only">(current)</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" ng-href="/playground">Playground</a>
+            </li>
+          </ul>
         </div>
-      </div>
+      </nav>
     </div>
     <div class="container">
       <div ng-view></div>
     </div>
 
     <script src="socket.io.js"></script>
-    <script src="included/jquery/dist/jquery.js"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
     <script src="included/angular/angular.js"></script>
-    <script src="included/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="included/bootstrap/js/bootstrap.min.js"></script>
     <script src="included/ng-lodash/build/ng-lodash.min.js"></script>
     <script src="included/angular-cookies/angular-cookies.js"></script>
     <script src="included/angular-route/angular-route.js"></script>
@@ -47,6 +69,7 @@
     <script src="client_app.js"></script>
     <script src="join/join.Ctrl.js"></script>
     <script src="main/main.Ctrl.js"></script>
+    <script src="playground/playground.Ctrl.js"></script>
     <script src="components/socket.Srvc.js"></script>
     <script src="https://kjur.github.io/jsrsasign/jsrsasign-all-min.js"></script>
   </body>

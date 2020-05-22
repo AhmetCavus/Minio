@@ -82,7 +82,7 @@ class MinioApp {
           resolve()
         })
       }
-    })
+    }).catch(error => reject(error))
   }
 
   connectToDb = async () => {

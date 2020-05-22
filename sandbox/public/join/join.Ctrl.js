@@ -6,7 +6,7 @@
   JoinCtrl.$inject = ["$location", "$scope", "$localStorage", "socket"]
 
   function JoinCtrl($location, $scope, $localStorage, socket) {
-    $scope.clientId = "cavus.ahmet@gmail.com"
+    $scope.clientId = "admin@minio.com"
     $scope.secretId = "testtest"
     $scope.channelId = "Todo"
     $scope.token = ""

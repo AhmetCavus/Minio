@@ -1,9 +1,9 @@
-﻿;(function () {
+;(function () {
   "use strict"
 
-  angular.module("app").controller("MainCtrl", MainCtrl)
+  angular.module("app").controller("PlaygroundCtrl", PlaygroundCtrl)
 
-  MainCtrl.$inject = [
+  PlaygroundCtrl.$inject = [
     "$location",
     "$scope",
     "$localStorage",
@@ -11,7 +11,7 @@
     "lodash",
   ]
 
-  function MainCtrl($location, $scope, $localStorage, socket, lodash) {
+  function PlaygroundCtrl($location, $scope, $localStorage, socket, lodash) {
     $scope.message = ""
     $scope.speech = "Talk"
     $scope.messages = []
@@ -116,11 +116,6 @@
       utterance.lang = "tr-TR"
       utterance.text = text
       synth.speak(utterance)
-    }
-
-    $scope.logout = function () {
-      socket.logout()
-      $location.path("/join")
     }
   }
 })()

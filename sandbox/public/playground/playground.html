@@ -1,0 +1,71 @@
+<div class="jumbotron">
+  <h2>Welcome <b>{{profile.email}}</b></h2>
+  ,
+  <p>Playground</p>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <form ng-submit="addItemToCollection()">
+      <div class="input-group">
+        <input
+          name="schema"
+          class="input-sm form-control"
+          ng-model="schema"
+          type="text"
+          placeholder="Add item to collection"
+        />
+      </div>
+      <div class="input-group">
+        <input
+          class="input-sm&quot; form-control"
+          ng-model="newItem"
+          type="text"
+          placeholder="New item"
+        />
+        <span class="input-group-btn">
+          <input class="input-sm btn btn-default" type="submit" value="Send" />
+        </span>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <form ng-submit="requestCollection()">
+      <div class="input-group">
+        <input
+          class="input-sm form-control"
+          ng-model="schema"
+          type="text"
+          placeholder="Request collection"
+        />
+        <span class="input-group-btn">
+          <input class="input-sm btn btn-default" type="submit" value="Send" />
+        </span>
+      </div>
+    </form>
+    <br />
+    <div class="well chatbox" id="collection">
+      {{collection}}
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <ul class="list-unstyled">
+      <li ng-repeat="p in privates">
+        <i class="fa fa-comment"></i> &nbsp; <b>{{p.from}} </b>: &nbsp;
+        {{p.data}}
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="col-md-3">
+  <button
+    class="btn btn-block btn-primary"
+    type="button"
+    value="{{speech}}"
+    ng-click="OnSpeech();"
+    style="font-size: 29px; background-color: skyblue;"
+  />
+</div>
