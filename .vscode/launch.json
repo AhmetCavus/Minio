@@ -18,8 +18,19 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "app start",
+      "name": "dev start",
       "runtimeExecutable": "nodemon",
+      "program": "${workspaceFolder}/sandbox/index.js",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "prod start",
+      "runtimeExecutable": "node",
       "program": "${workspaceFolder}/sandbox/index.js",
       "restart": true,
       "console": "integratedTerminal",

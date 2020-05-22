@@ -19,11 +19,11 @@ class PubSubService {
   }
 
   notifyAddCollectionItem(schema, item) {
-    socketService.notifyAddItemCollection(schema, item)
+    socketService.notifyAddCollectionItem(schema, item)
   }
 
   notifyRemoveItem(schema, item) {
-    socketService.notifyRemoveItem(schema, item)
+    socketService.notifyRemoveCollectionItem(schema, item)
   }
 
   notifyUpdateCollection(schema, items) {

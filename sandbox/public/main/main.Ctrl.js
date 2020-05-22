@@ -77,7 +77,7 @@
     $scope.sendMessage = function (to) {
       var newMessage = {
         message: $scope.message,
-        from: $scope.profile.clientId,
+        from: $scope.profile.email,
         to: to,
       }
       socket.emit("COMMAND_SEND_BROADCAST", newMessage)
@@ -105,11 +105,10 @@
 
     $scope.sendLike = function (user) {
       console.log(user)
-      var id = lodash.get(user, "socketId")
       var likeObj = {
-        from: $scope.profile.clientId,
-        to: user.profile.clientId,
-        socketId: user.id,
+        from: $scope.profile.id,
+        to: user.id,
+        socketId: user.socketId,
         data: {},
       }
       socket.emit("COMMAND_SEND_PRIVATE_MESSAGE", likeObj)

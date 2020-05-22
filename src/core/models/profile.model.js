@@ -6,6 +6,8 @@ const ProfileModel = new Collection("Profile", {
   email: Provider.String,
   password: Provider.String,
   role: Provider.String,
+  isOnline: Provider.Boolean,
+  connectedSince: Provider.Date,
 })
 
 module.exports = ProfileModel
