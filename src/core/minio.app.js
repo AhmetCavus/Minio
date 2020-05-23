@@ -1,11 +1,14 @@
+require("dotenv").config()
+
 const path = require("path")
 
 const _ = require("lodash")
-const bodyParser = require("body-parser")
 const express = require("express")
 const app = express()
+const bodyParser = require("body-parser")
+const compression = require("compression")
+const helmet = require("helmet")
 const morgan = require("morgan")
-require("dotenv").config()
 
 const DbAdapterFactory = require("./db/db.adapter.factory")
 const DbSchemaFactory = require("./db/db.schema.factory")
@@ -16,6 +19,7 @@ const collectionRoutes = require("./routes/collection.route")
 const authMiddleware = require("./middleware/auth")
 const Profile = require("./models/profile.model")
 const profileRepo = require("./repositories/profile.repository")
+const cors = require("./middleware/cors")
 
 class MinioApp {
   constructor() {
@@ -33,6 +37,9 @@ class MinioApp {
     app.use(express.static(path.join(this.mainDir, "public")))
     app.use(bodyParser.json({ extended: false }))
     app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(cors)
+    app.use(helmet())
+    app.use(compression())
     app.use(morgan("common"))
     app.use("/authenticate", authRoutes)
     app.use("/admin", authMiddleware, adminRoutes)

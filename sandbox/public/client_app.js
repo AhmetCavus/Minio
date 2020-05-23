@@ -17,9 +17,9 @@ angular
         templateUrl: "main/main.html",
         controller: "MainCtrl",
       })
-      .when("/playground", {
-        templateUrl: "playground/playground.html",
-        controller: "PlaygroundCtrl",
+      .when("/api", {
+        templateUrl: "api/api.html",
+        controller: "ApiCtrl",
       })
       .when("/logout", {
         templateUrl: "join/join.html",

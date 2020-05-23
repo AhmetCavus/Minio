@@ -6,9 +6,16 @@
   JoinCtrl.$inject = ["$location", "$scope", "$localStorage", "socket"]
 
   function JoinCtrl($location, $scope, $localStorage, socket) {
-    $scope.clientId = "admin@minio.com"
-    $scope.secretId = "testtest"
-    $scope.channelId = "Todo"
+    $scope.clientId = $localStorage.saveCredentials
+      ? $localStorage.clientId
+      : ""
+    $scope.secretId = $localStorage.saveCredentials
+      ? $localStorage.secretId
+      : ""
+    $scope.channelId = $localStorage.saveCredentials
+      ? $localStorage.channelId
+      : ""
+    $scope.saveCredentials = $localStorage.saveCredentials
     $scope.token = ""
     $scope.info = "Info Panel"
     var account
@@ -40,6 +47,10 @@
           socket.on("unauthorized", onSocketUnauthorized)
           account = parseJwt($scope.token)
           $localStorage.account = account
+          $localStorage.clientId = $scope.clientId
+          $localStorage.secretId = $scope.secretId
+          $localStorage.channelId = $scope.channelId
+          $localStorage.saveCredentials = $scope.saveCredentials
         })
         .catch(err => {
           $scope.info = err

@@ -1,7 +1,9 @@
 <div class="jumbotron">
   <h2>Welcome <b>{{profile.email}}</b></h2>
-  ,
-  <p>Playground</p>
+  <p>Api</p>
+  <button type="button" class="btn-sm btn-dark h-25" ng-click="logout()">
+    Logout
+  </button>
 </div>
 <div class="row">
   <div class="col-md-12">
@@ -17,19 +19,23 @@
       </div>
       <div class="input-group">
         <input
-          class="input-sm&quot; form-control"
+          class="input-sm form-control"
           ng-model="newItem"
           type="text"
           placeholder="New item"
         />
         <span class="input-group-btn">
-          <input class="input-sm btn btn-default" type="submit" value="Send" />
+          <input
+            class="input-sm btn btn-primary"
+            type="submit"
+            value="Add item to collection"
+          />
         </span>
       </div>
     </form>
   </div>
 </div>
-<div class="row">
+<div class="row mt-3">
   <div class="col-md-12">
     <form ng-submit="requestCollection()">
       <div class="input-group">
@@ -40,32 +46,21 @@
           placeholder="Request collection"
         />
         <span class="input-group-btn">
-          <input class="input-sm btn btn-default" type="submit" value="Send" />
+          <input
+            class="input-sm btn btn-primary"
+            type="submit"
+            value="Request collection"
+          />
         </span>
       </div>
     </form>
-    <br />
     <div class="well chatbox" id="collection">
-      {{collection}}
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="item in collection.items">
+          {{ item._id }}
+        </li>
+      </ul>
     </div>
   </div>
 </div>
-<div class="row">
-  <div class="col-md-12">
-    <ul class="list-unstyled">
-      <li ng-repeat="p in privates">
-        <i class="fa fa-comment"></i> &nbsp; <b>{{p.from}} </b>: &nbsp;
-        {{p.data}}
-      </li>
-    </ul>
-  </div>
-</div>
-<div class="col-md-3">
-  <button
-    class="btn btn-block btn-primary"
-    type="button"
-    value="{{speech}}"
-    ng-click="OnSpeech();"
-    style="font-size: 29px; background-color: skyblue;"
-  />
 </div>
