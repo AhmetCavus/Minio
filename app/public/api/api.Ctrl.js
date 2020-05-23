@@ -12,7 +12,7 @@
     $scope.users = []
     $scope.likes = []
     $scope.privates = []
-    $scope.newItem = '{ "name": "Test Bot", "from": "Ahmet Cavus" }'
+    $scope.newItem = "{}"
     $scope.schema = "Profile"
     $scope.profile = $localStorage.account
 
