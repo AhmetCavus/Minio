@@ -21,6 +21,50 @@ const Profile = require("./models/profile.model")
 const profileRepo = require("./repositories/profile.repository")
 const cors = require("./middleware/cors")
 
+/**
+ * @description
+ * This class manages the minio framework and provides
+ * following services:
+ * Auth sercice
+ * Model service
+ * API service
+ * @example
+ * To start the application, you have to provide an
+ * .env file in the project root solution with following
+ * keys:
+ *
+ * HOSTNAME=127.0.0.1
+ * PORT=80
+ * DBHOST=Address of your db engine
+ * DBNAME=name of your db
+ * DBUSER=admin
+ * DBPASS=*****
+ * DBPORT=80
+ * DBAUTH=admin
+ * DBENGINE=MongoDb
+ * MODELDIR=The directory of your model schema
+ * CREDENTIALS_COLLECTION=The collection holding the credentials
+ * JWT_SECRET=The secret key of jwt
+ * ROOT_CLIENT=The super user
+ * ROOT_SECRET=Secret of the super user
+ * ROOT_EMAIL=Mail of the super user
+ * ENABLE_WEBSOCKET=true
+ *
+ * @tutorial
+ * A minimal code snippet for starting the app:
+ *
+ * const Minio = require("../src/core/minio.app")
+ * const minio = new Minio.App()
+ * minio.start().then(() => {
+ *  console.log("Minio is up and running")
+ * })
+ * minio.setting((app, express) => {
+ *  app.get("/", (req, res) => {
+ *    res.sendFile(__dirname + "/public/index.html")
+ *  })
+ * app.use("/todo", require("./routes/todo.route"))
+ * })
+ */
 class MinioApp {
   constructor() {
     this.mainDir = path.dirname(require.main.filename)
@@ -47,6 +91,11 @@ class MinioApp {
     module.exports.instance = this
   }
 
+  /**
+   * @description Resolves the collection regarding to the given name.
+   * @param {string} name - The name of the collection that should be resolved.
+   * @returns {Collection} the found collection matches to the given name.
+   */
   collection(name) {
     return _.findLast(
       this.collections,
@@ -54,6 +103,9 @@ class MinioApp {
     )
   }
 
+  /**
+   * @description Launches minio by starting the necessary services..
+   */
   async start() {
     try {
       await this.connectToDb()
@@ -65,6 +117,11 @@ class MinioApp {
     }
   }
 
+  /**
+   * @description Invokes a callback providing the app and express instances.
+   * @param {Callback} callback the callback providing parameters for specifying
+   * further settings according to the routes, middleware etc..
+   */
   setting(callback) {
     callback(app, express)
   }
