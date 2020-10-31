@@ -16,34 +16,51 @@ services with support for customize the special requirements. It's not just anot
 git clone https://github.com/AhmetCavus/Minio.git
 
 cd minio
+
 npm i
 
-### env file
+### Configuration
 
 You have to provide an env file '.env' in your project root folder.
 This file should contain following keys:
 
 HOSTNAME=127.0.0.1
+
 PORT=80
+
 DBHOST=Address of your db engine
+
 DBNAME=name of your db
+
 DBUSER=admin
+
 DBPASS=**\***
+
 DBPORT=80
+
 BAUTH=admin
+
 DBENGINE=MongoDb
+
 MODELDIR=The directory of your model schema
+
 CREDENTIALS_COLLECTION=The collection holding the credentials
+
 JWT_SECRET=The secret key of jwt
+
 ROOT_CLIENT=The super user
+
 ROOT_SECRET=Secret of the super user
+
 ROOT_EMAIL=Mail of the super user
+
 ENABLE_WEBSOCKET=true
 
 Be aware of commiting this file in your repo!!!
 
 ### Usage
 
+```nodejs
 const Minio = require("../src/core/minio.app")
 
 const minio = new Minio.App()
@@ -58,12 +75,23 @@ res.sendFile(\_\_dirname + "/public/index.html")
 })
 app.use("/todo", require("./routes/todo.route"))
 })
+```
 
 ```
     For more information check the unit test project folder.
 ```
 
+### Starting the application
+
+npm start
+
+### Playground
+
+You can enter the playground by calling ```localhost``` in your browser.
+
 ### Tests
+
+npm test
 
 ## Requirements
 
