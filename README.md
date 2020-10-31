@@ -24,6 +24,7 @@ npm i
 You have to provide an env file '.env' in your project root folder.
 This file should contain following keys:
 
+```
 HOSTNAME=127.0.0.1
 
 PORT=80
@@ -55,6 +56,7 @@ ROOT_SECRET=Secret of the super user
 ROOT_EMAIL=Mail of the super user
 
 ENABLE_WEBSOCKET=true
+```
 
 Be aware of commiting this file in your repo!!!
 
@@ -76,10 +78,7 @@ res.sendFile(\_\_dirname + "/public/index.html")
 app.use("/todo", require("./routes/todo.route"))
 })
 ```
-
-```
-    For more information check the unit test project folder.
-```
+For more information check the unit test project folder.
 
 ### Starting the application
 
