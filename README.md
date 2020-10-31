@@ -39,7 +39,7 @@ DBPASS=**\***
 
 DBPORT=80
 
-BAUTH=admin
+DBAUTH=admin
 
 DBENGINE=MongoDb
 
