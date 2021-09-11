@@ -9,7 +9,8 @@ class AuthService {
 
   async authenticate(email, password) {
     const profile = await profileRepo.find(email)
-    const isMatch = await bcrypt.compare(password, profile?.password || '')
+    const password = profile ? profile.password : ''
+    const isMatch = await bcrypt.compare(password, password)
     if (isMatch) {
       return tokenService.sign({
         id: profile._id.toString(),
