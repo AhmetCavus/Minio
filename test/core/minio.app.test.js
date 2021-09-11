@@ -1,3 +1,5 @@
+require("regenerator-runtime")
+
 const MinioApp = require("./../../src/core/minio.app")
 
 const chai = require("chai")

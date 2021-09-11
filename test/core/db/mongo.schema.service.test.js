@@ -1,3 +1,5 @@
+require("regenerator-runtime")
+
 const path = require("path")
 const SchemaServiceFactory = require("./../../../src/core/db/db.schema.factory")
 const SupportedEngine = require("./../../../src/core/db/supported.engine")

@@ -1,3 +1,5 @@
+require("regenerator-runtime")
+
 const DbService = require("./../../../src/core/db/db.service")
 const MongoAdapter = require("./../../../src/core/db/mongo.adapter")
 
