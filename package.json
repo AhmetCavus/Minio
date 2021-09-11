@@ -1,7 +1,7 @@
 {
-  "name": "minio",
+  "name": "minio-cms",
   "version": "0.1.0",
-  "description": "",
+  "description": "A lightweight sandbox project providing features like authentication and socket communication",
   "main": "index.js",
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -38,6 +38,9 @@
     "db": "mongod --config settings/mongod.conf",
     "test-report": "mocha './test/**/*.test.js' --reporter mocha-junit-reporter --reporter-options mochaFile=./test/test-results.xml",
     "test-coverage": "jest --coverage --coverageReporters=cobertura --coverageDirectory=test"
+  },
+  "repository": {
+    "url": "https://github.com/AhmetCavus/minio"
   },
   "author": "Ahmet Cavus",
   "license": "MIT"

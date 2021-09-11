@@ -1,9 +1,9 @@
 # Minio
 
-![Build Status](https://dev.azure.com/cinary/Collect.IO/_apis/build/status/AhmetCavus.minio?branchName=main)
-![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/cinary/minio/7)
-![Azure DevOps tests](https://img.shields.io/azure-devops/tests/cinary/minio/7)
-![npm](https://img.shields.io/npm/v/minio)
+![Build Status](https://dev.azure.com/cinary/Minio/_apis/build/status/AhmetCavus.Minio?branchName=develop)
+![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/cinary/minio/8)
+![Azure DevOps tests](https://img.shields.io/azure-devops/tests/cinary/minio/8)
+![npm](https://img.shields.io/npm/v/minio-cms)
 
 Minio is an easy to use minimalistic sandbox project providing
 
