@@ -32,7 +32,7 @@ class MongoAdapter {
     return this.modelMap
   }
 
-  createConnectionString = config => {
+  createConnectionString(config) {
     const { dbUser, dbPass, dbHost, dbPort, dbName, authDb } = config
     if (_.isEmpty(dbUser) || _.isEmpty(dbPass)) {
       return f(
