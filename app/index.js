@@ -2,9 +2,13 @@ const Minio = require("../src/core/minio.app")
 
 const minio = new Minio.App()
 
-minio.start().then(() => {
-  console.log("Minio is up and running")
-})
+try {
+  minio.start().then(() => {
+    console.log("Minio is up and running")
+  })
+} catch (error) {
+  console.log(error)
+}
 
 minio.setting((app, express) => {
   app.get("/", (req, res) => {

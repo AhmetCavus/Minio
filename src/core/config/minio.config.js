@@ -1,4 +1,5 @@
 const minioConfig = {
+  dbUri: process.env.DB_URI,
   hostname: process.env.HOSTNAME,
   port: process.env.PORT,
   dbHost: process.env.DBHOST,

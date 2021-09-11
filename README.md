@@ -1,5 +1,10 @@
 # Minio
 
+![Build Status](https://dev.azure.com/cinary/Collect.IO/_apis/build/status/AhmetCavus.minio?branchName=main)
+![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/cinary/minio/7)
+![Azure DevOps tests](https://img.shields.io/azure-devops/tests/cinary/minio/7)
+![npm](https://img.shields.io/npm/v/minio)
+
 Minio is an easy to use minimalistic sandbox project providing
 
 - auth
@@ -9,15 +14,32 @@ Minio is an easy to use minimalistic sandbox project providing
 
 services with support for customize the special requirements. It's not just another CMS system. It's only a minimalistic bootstrapper providng possibility for customizations.
 
+The main purpose is to providing convenient services in order to
+automate following features:
+
+- auth management
+- token management
+- providing model mapping
+- security management
+- service connections
+
 ## Getting Started
 
 ### Installation
 
-git clone https://github.com/AhmetCavus/Minio.git
+`git clone https://github.com/AhmetCavus/Minio.git`
 
-cd minio
+or
 
-npm i
+`git clone git@github.com:AhmetCavus/Minio.git`
+
+`cd .\Minio`
+
+or
+
+`cd Minio`
+
+`npm i`
 
 ### Configuration
 
@@ -25,37 +47,11 @@ You have to provide an env file '.env' in your project root folder.
 This file should contain following keys:
 
 ```
-HOSTNAME=127.0.0.1
-
-PORT=80
-
-DBHOST=Address of your db engine
-
-DBNAME=name of your db
-
-DBUSER=admin
-
-DBPASS=**\***
-
-DBPORT=80
-
-DBAUTH=admin
-
-DBENGINE=MongoDb
-
-MODELDIR=The directory of your model schema
-
-CREDENTIALS_COLLECTION=The collection holding the credentials
-
-JWT_SECRET=The secret key of jwt
-
-ROOT_CLIENT=The super user
-
-ROOT_SECRET=Secret of the super user
-
-ROOT_EMAIL=Mail of the super user
-
-ENABLE_WEBSOCKET=true
+MONGO_URI=mongodb://user:pass@host:port/collection?authSource=admin
+JWT_SECRET=do.not.read.it.is.jwt.secret
+VERIFY_SIGNATURE=i.can.open.doors
+CLIENT_ID=alone.i.am.useless
+SECRET_ID=do.not.read.it.is.client.secret
 ```
 
 Be aware of commiting this file in your repo!!!
@@ -79,6 +75,50 @@ app.use("/todo", require("./routes/todo.route"))
 })
 ```
 For more information check the unit test project folder.
+
+### Options
+
+In order to configurate the server and ports, you can specify following values on startup:
+
+```nodejs
+minio.start(options)
+```
+
+| Key             | Description                                                                | Default                                    |
+| -----------     | :------------------------------------------------------------------------- | :----------------------------------------- |
+| port            | Specify the port                                                           | 8080                                       |
+| modelPath       | The path of the models, that should be registered in the db                | models                                     |
+| enableWebsocket | Whether to enable the websocket support or not                             | False                                      |
+
+### Accessing to collections
+
+In order to access the collection provided in the models, you can simply call the code below
+
+```nodejs
+const device = minio.collection("device")
+// device.model is the mongoose schema
+```
+After that, minio provides you convenient methods to notify observers
+
+| Function    | Description                                                                |
+| ----------- | :------------------------------------------------------------------------- |
+| sendBroadcast(message, channelName) | Send a broadcast to all oberservers registererd to the given channel name |
+| notifyAddItemCollection(schema, item) | Notify all oberservers listening to changes for the given schema and provide the new created item |
+| notifyRemoveItem(schema, item) | Notify all oberservers listening to changes for the given schema and provide the removed item |
+| notifyUpdateCollection(schema, items) | Notify all oberservers listening to changes for the given schema and provide the items of the changed collection |
+| notifyUpdateCollectionItem(schema, item) | Notify all oberservers listening to changes for the given schema and provide the updated item of the collection |
+
+For every model schema in your models path, a collection will be created in the database. In addition, it will be supplied with bi-directional communication through sockets. You can get further detail in the API calls section.
+
+### API calls
+
+An OpenAPI Spec will be provided here. TBD
+
+### Creating models
+
+For instructions of creating models, you can check the docu of the classic KeystoneJS [How to create models](https://v4.keystonejs.com/api/field/options)
+
+In order to create nested list, check following sample file: [TodoModel](./app/models/todo.js)
 
 ### Starting the application
 

@@ -8,7 +8,7 @@ class MongoAdapter {
   constructor() {}
 
   connect(config) {
-    this.connectionString = this.createConnectionString(config)
+    this.connectionString = config.dbUri
     return new Promise((resolve, reject) => {
       mongoose.connect(this.connectionString, {
         useNewUrlParser: true,

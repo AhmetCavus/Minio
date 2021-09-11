@@ -20,6 +20,7 @@ const authMiddleware = require("./middleware/auth")
 const Profile = require("./models/profile.model")
 const profileRepo = require("./repositories/profile.repository")
 const cors = require("./middleware/cors")
+const SupportedEngine = require("./db/supported.engine")
 
 /**
  * @description
@@ -68,12 +69,12 @@ const cors = require("./middleware/cors")
 class MinioApp {
   constructor() {
     this.mainDir = path.dirname(require.main.filename)
-    this.config = require("./config/minio.config")
+    this.config = require('./config/minio.config')
     this.dbService = new DbService(
-      DbAdapterFactory.createAdapter(this.config.dbEngine)
+      DbAdapterFactory.createAdapter(SupportedEngine.MongoDb)
     )
     this.schemaService = DbSchemaFactory.createSchemaService(
-      this.config.dbEngine
+      SupportedEngine.MongoDb
     )
 
     app.set("view engine", "ejs")
@@ -106,15 +107,11 @@ class MinioApp {
   /**
    * @description Launches minio by starting the necessary services..
    */
-  async start() {
-    try {
-      await this.connectToDb()
-      await this.resolveCollections()
-      await this.ensureCredentialsCollectionCreated()
-      await this.startServer()
-    } catch (error) {
-      console.log(error)
-    }
+  async start(options) {
+    await this.connectToDb(options)
+    await this.resolveCollections(options)
+    await this.ensureCredentialsCollectionCreated()
+    await this.startServer(options)
   }
 
   /**
@@ -126,35 +123,29 @@ class MinioApp {
     callback(app, express)
   }
 
-  startServer = () => {
-    return new Promise((resolve, reject) => {
-      const { hostname, port } = this.config
-
-      if (process.env.ENABLE_WEBSOCKET) {
-        const server = require("http").Server(app)
-        server.listen(port, () => {
-          console.log("Minio app listening on port " + port)
-          resolve()
-        })
-        require("./services/pubsub.service")(server)
-        Object.keys(this.collections).forEach(name => {
-          this.collections[name].enableSocket()
-        })
-      } else {
-        app.listen(port, hostname, () => {
-          console.log("Minio app listening on port " + port)
-          resolve()
-        })
-      }
-    }).catch(error => reject(error))
+  startServer = async options => {
+    if (options?.enableWebsocket) {
+      const server = require("http").Server(app)
+      server.listen(options.port || 8080, () => {
+        console.log("Minio app listening on port " + options?.port)
+      })
+      require("./services/pubsub.service")(server)
+      Object.keys(this.collections).forEach(name => {
+        this.collections[name].enableSocket()
+      })
+    } else {
+      app.listen(options?.port || 8080, () => {
+        console.log("Minio app listening on port " + options?.port)
+      })
+    }
   }
 
   connectToDb = async () => {
     await this.dbService.connect(this.config)
   }
 
-  resolveCollections = async () => {
-    const { modelDir } = this.config
+  resolveCollections = async (options) => {
+    const modelDir = options?.modelDir || 'models'
     let pathToLook = _.isEmpty(modelDir)
       ? path.join(this.mainDir, "models")
       : path.join(this.mainDir, modelDir)
@@ -168,9 +159,9 @@ class MinioApp {
     this.dbService.registerCollections([Profile])
     if (await profileRepo.isInitialized()) return
     const result = await profileRepo.create({
-      name: process.env.ROOT_CLIENT,
-      email: process.env.ROOT_EMAIL,
-      password: process.env.ROOT_SECRET,
+      name: 'admin',
+      email: 'admin',
+      password: 'admin',
       role: "Admin",
     })
     if (result.errors) throw new Error(result.errors)

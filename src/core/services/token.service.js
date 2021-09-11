@@ -1,10 +1,6 @@
 ﻿const jwt = require("jsonwebtoken")
 
 class TokenService {
-  constructor() {
-    console.log("TokenService created")
-  }
-
   verify(token) {
     return jwt.verify(token, process.env.JWT_SECRET, [
       process.env.HASH_ALGORITHM || "HS384",
