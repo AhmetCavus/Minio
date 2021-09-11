@@ -22,6 +22,11 @@ const profileRepo = require("./repositories/profile.repository")
 const cors = require("./middleware/cors")
 const SupportedEngine = require("./db/supported.engine")
 
+const startServer = Symbol("startServer")
+const connectToDb = Symbol("connectToDb")
+const resolveCollections = Symbol("resolveCollections")
+const ensureCredentialsCollectionCreated = Symbol("ensureCredentialsCollectionCreated")
+
 /**
  * @description
  * This class manages the minio framework and provides
@@ -108,10 +113,10 @@ class MinioApp {
    * @description Launches minio by starting the necessary services..
    */
   async start(options) {
-    await this.connectToDb(options)
-    await this.resolveCollections(options)
-    await this.ensureCredentialsCollectionCreated()
-    await this.startServer(options)
+    await this[connectToDb](options)
+    await this[resolveCollections](options)
+    await this[ensureCredentialsCollectionCreated]()
+    await this[startServer](options)
   }
 
   /**
@@ -123,7 +128,7 @@ class MinioApp {
     callback(app, express)
   }
 
-  startServer = async options => {
+  async [startServer](options) {
     if (options?.enableWebsocket) {
       const server = require("http").Server(app)
       server.listen(options.port || 8080, () => {
@@ -140,11 +145,11 @@ class MinioApp {
     }
   }
 
-  connectToDb = async () => {
+  async [connectToDb]() {
     await this.dbService.connect(this.config)
   }
 
-  resolveCollections = async (options) => {
+  async [resolveCollections](options) {
     const modelDir = options?.modelDir || 'models'
     let pathToLook = _.isEmpty(modelDir)
       ? path.join(this.mainDir, "models")
@@ -153,7 +158,7 @@ class MinioApp {
     return this.dbService.registerCollections(this.collections)
   }
 
-  ensureCredentialsCollectionCreated = async () => {
+  async [ensureCredentialsCollectionCreated]() {
     if (!this.collection("Profile")) this.collections.push(Profile)
     this.schemaService.createSchemas([Profile])
     this.dbService.registerCollections([Profile])
