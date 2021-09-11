@@ -200,7 +200,7 @@ class SocketEngine {
     socket.disconnect()
   }
 
-  [onConnection] = (channel, socket) => {
+  [onConnection](channel, socket) {
     this[initSocketEvents](channel, socket)
     this[refreshUsers](channel, socket)
   };
@@ -247,7 +247,7 @@ class SocketEngine {
     })
   };
 
-  [refreshUsers] = (channel, socket) => {
+  [refreshUsers](channel, socket) {
     const user = jwt.decode(socket.handshake.query.token)
     if (!user) return
     user.socketId = socket.id
