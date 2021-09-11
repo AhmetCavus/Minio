@@ -22,7 +22,7 @@ steps:
     displayName: "npm install and build"
 
   - script: |
-      npm run test-coverage
+      npm run test-report
     displayName: "run test report"
 
   - script: |
