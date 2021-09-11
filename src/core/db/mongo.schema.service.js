@@ -26,7 +26,7 @@ class MongoSchemaService {
     return allFiles.filter(file => file.endsWith(".js"))
   }
 
-  requireCollections = (sourceOfCollections, collectionFiles) => {
+  requireCollections(sourceOfCollections, collectionFiles) {
     const collections = []
     collectionFiles.forEach(fileName => {
       collections.push(require(path.join(sourceOfCollections, fileName)))
@@ -34,7 +34,7 @@ class MongoSchemaService {
     return collections
   }
 
-  createSchemas = collections => {
+  createSchemas(collections) {
     return new Promise((resolve, reject) => {
       const schemas = []
       collections.forEach(collection => {
@@ -48,7 +48,7 @@ class MongoSchemaService {
     })
   }
 
-  createMongooseSchema = schemaDefinition => {
+  createMongooseSchema(schemaDefinition) {
     const newSchema = { ...schemaDefinition }
     const schemaKeys = Object.keys(newSchema)
     schemaKeys.forEach(schemaKey => {
@@ -66,7 +66,7 @@ class MongoSchemaService {
     return newSchema
   }
 
-  createMongooseType = type => {
+  createMongooseType(type) {
     switch (type) {
       case Provider.Boolean:
         return Boolean
