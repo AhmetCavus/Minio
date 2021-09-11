@@ -6,14 +6,19 @@ const _ = require("lodash")
 
 const Provider = require("./../type/provider")
 
+const resolveCollectionFiles = Symbol("resolveCollectionFiles")
+const requireCollections = Symbol("requireCollections")
+const createMongooseSchema = Symbol("createMongooseSchema")
+const createMongooseType = Symbol("createMongooseType")
+
 class MongoSchemaService {
   constructor() {}
 
   async resolveCollections(sourceOfCollections) {
-    const collectionFiles = await this.resolveCollectionFiles(
+    const collectionFiles = await this[resolveCollectionFiles](
       sourceOfCollections
     )
-    const collections = this.requireCollections(
+    const collections = this[requireCollections](
       sourceOfCollections,
       collectionFiles
     )
@@ -21,12 +26,12 @@ class MongoSchemaService {
     return collections
   }
 
-  async resolveCollectionFiles(sourceOfCollections) {
+  async [resolveCollectionFiles](sourceOfCollections) {
     const allFiles = await fs.readdir(sourceOfCollections)
     return allFiles.filter(file => file.endsWith(".js"))
   }
 
-  requireCollections(sourceOfCollections, collectionFiles) {
+  [requireCollections](sourceOfCollections, collectionFiles) {
     const collections = []
     collectionFiles.forEach(fileName => {
       collections.push(require(path.join(sourceOfCollections, fileName)))
@@ -39,7 +44,7 @@ class MongoSchemaService {
       const schemas = []
       collections.forEach(collection => {
         collection.convertToSchema(preDefinition => {
-          const schema = new Schema(this.createMongooseSchema(preDefinition))
+          const schema = new Schema(this[createMongooseSchema](preDefinition))
           schemas.push(schema)
           return schema
         })
@@ -48,25 +53,25 @@ class MongoSchemaService {
     })
   }
 
-  createMongooseSchema(schemaDefinition) {
+  [createMongooseSchema](schemaDefinition) {
     const newSchema = { ...schemaDefinition }
     const schemaKeys = Object.keys(newSchema)
     schemaKeys.forEach(schemaKey => {
       const value = newSchema[schemaKey]
       if (Array.isArray(value)) {
-        const arraySchema = this.createMongooseSchema(value[0])
+        const arraySchema = this[createMongooseSchema](value[0])
         newSchema[schemaKey] = [arraySchema]
       } else if (typeof value === "object") {
-        newSchema[schemaKey] = this.createMongooseSchema(value)
+        newSchema[schemaKey] = this[createMongooseSchema](value)
       } else {
         if (schemaKey !== "type") return
-        newSchema[schemaKey] = this.createMongooseType(value)
+        newSchema[schemaKey] = this[createMongooseType](value)
       }
     })
     return newSchema
   }
 
-  createMongooseType(type) {
+  [createMongooseType](type) {
     switch (type) {
       case Provider.Boolean:
         return Boolean
