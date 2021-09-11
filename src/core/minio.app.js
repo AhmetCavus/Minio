@@ -113,10 +113,11 @@ class MinioApp {
    * @description Launches minio by starting the necessary services..
    */
   async start(options) {
-    await this[connectToDb](options)
-    await this[resolveCollections](options)
+    const config = options === undefined ? {} : options
+    await this[connectToDb](config)
+    await this[resolveCollections](config)
     await this[ensureCredentialsCollectionCreated]()
-    await this[startServer](options)
+    await this[startServer](config)
   }
 
   /**
@@ -129,18 +130,19 @@ class MinioApp {
   }
 
   async [startServer](options) {
-    if (options?.enableWebsocket) {
+    const port = options.port || 8080
+    if (options.enableWebsocket) {
       const server = require("http").Server(app)
-      server.listen(options.port || 8080, () => {
-        console.log("Minio app listening on port " + options?.port)
+      server.listen(port, () => {
+        console.log("Minio app listening on port " + port)
       })
       require("./services/pubsub.service")(server)
       Object.keys(this.collections).forEach(name => {
         this.collections[name].enableSocket()
       })
     } else {
-      app.listen(options?.port || 8080, () => {
-        console.log("Minio app listening on port " + options?.port)
+      app.listen(port, () => {
+        console.log("Minio app listening on port " + port)
       })
     }
   }
@@ -150,7 +152,7 @@ class MinioApp {
   }
 
   async [resolveCollections](options) {
-    const modelDir = options?.modelDir || 'models'
+    const modelDir = options.modelDir || 'models'
     let pathToLook = _.isEmpty(modelDir)
       ? path.join(this.mainDir, "models")
       : path.join(this.mainDir, modelDir)
