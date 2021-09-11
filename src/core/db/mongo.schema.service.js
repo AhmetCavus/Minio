@@ -21,7 +21,7 @@ class MongoSchemaService {
     return collections
   }
 
-  resolveCollectionFiles = async function(sourceOfCollections) {
+  async resolveCollectionFiles(sourceOfCollections) {
     const allFiles = await fs.readdir(sourceOfCollections)
     return allFiles.filter(file => file.endsWith(".js"))
   }
