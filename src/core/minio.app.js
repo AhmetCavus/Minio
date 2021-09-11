@@ -175,4 +175,8 @@ class MinioApp {
   }
 }
 
-module.exports.App = MinioApp
+module.exports = {
+  App: MinioApp,
+  Collection: require("./collection"),
+  Provider: require("./type/provider")
+}
