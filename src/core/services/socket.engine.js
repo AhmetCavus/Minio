@@ -205,7 +205,7 @@ class SocketEngine {
     this[refreshUsers](channel, socket)
   };
 
-  [initSocketEvents] = (channel, socket) => {
+  [initSocketEvents](channel, socket) {
     socket.on(SOCKET.COMMAND_SEND_BROADCAST, data => {
       this.broadCast(data, channel, socket)
     })
