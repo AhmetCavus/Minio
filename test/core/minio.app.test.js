@@ -1,5 +1,4 @@
 require("regenerator-runtime")
-require("text-encoder")
 
 const MinioApp = require("./../../src/core/minio.app")
 
