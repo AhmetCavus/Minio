@@ -30,7 +30,7 @@
       "type": "node",
       "request": "launch",
       "name": "tests start",
-      "program": "${workspaceRoot}/node_modules/mocha/bin/mocha",
+      "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "args": ["--inspect-brk", "${workspaceFolder}/test/**/*.js"],
       "port": 9229,
       "internalConsoleOptions": "openOnSessionStart"

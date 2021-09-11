@@ -34,12 +34,12 @@ describe("DbService", () => {
 
   describe("#registerSchemas", () => {
     it("should register the schemas", () => {
-      const models = dbService.registerSchemas(schemaDefinitions)
+      const models = dbService.registerCollections(schemaDefinitions)
       chai.assert.typeOf(models, "Object")
     })
 
     it("should retrieve models named like expected", () => {
-      const models = dbService.registerSchemas(schemaDefinitions)
+      const models = dbService.registerCollections(schemaDefinitions)
       expect(models).to.have.all.keys(["TestModel", "Test2Model"])
     })
   })

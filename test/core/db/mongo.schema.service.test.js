@@ -19,12 +19,12 @@ describe("SchemaService", () => {
     const pathToSchemas = path.join(__dirname, "..", "models")
 
     it("should not return null", async () => {
-      const schemas = await schemaService.resolveSchemas(pathToSchemas)
+      const schemas = await schemaService.resolveCollections(pathToSchemas)
       expect(schemas).is.not.null
     })
 
     it("should return objects with a name property", async () => {
-      const schemas = await schemaService.resolveSchemas(pathToSchemas)
+      const schemas = await schemaService.resolveCollections(pathToSchemas)
       Object.keys(schemas).forEach(key =>
         expect(schemas[key]).has.property("name")
       )
