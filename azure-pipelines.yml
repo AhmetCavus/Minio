@@ -22,9 +22,12 @@ steps:
     displayName: "npm install and build"
 
   - script: |
-      npm run test-report
       npm run test-coverage
-    displayName: "npm test"
+    displayName: "run test report"
+
+  - script: |
+      npm run test-coverage
+    displayName: "run test coverage"
 
   - task: PublishTestResults@2
     condition: succeededOrFailed()

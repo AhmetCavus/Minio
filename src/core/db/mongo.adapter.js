@@ -3,9 +3,10 @@ const _ = require("lodash")
 const mongoose = require("mongoose")
 
 class MongoAdapter {
-  modelMap = {}
-
-  constructor() {}
+  
+  constructor() {
+    this.modelMap = {}
+  }
 
   connect(config) {
     this.connectionString = config.dbUri
