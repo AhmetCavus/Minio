@@ -1,4 +1,5 @@
 require("regenerator-runtime")
+require("text-encoder")
 
 const path = require("path")
 const SchemaServiceFactory = require("./../../../src/core/db/db.schema.factory")

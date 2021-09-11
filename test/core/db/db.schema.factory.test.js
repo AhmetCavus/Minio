@@ -1,4 +1,5 @@
 require("regenerator-runtime")
+require("text-encoder")
 
 const chai = require("chai")
 const expect = chai.expect
