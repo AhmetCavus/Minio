@@ -5,20 +5,11 @@ const sinon = require("sinon")
 const expect = chai.expect
 const faker = require("faker")
 
-// describe("MinioApp", () => {
-//   const models = [
-//     "Test1Model",
-//     "Test2Model",
-//     "Test3Model",
-//     "Test4Model",
-//     "Test5Model",
-//   ]
-//   describe("#resolveModels", () => {
-//     it("should return all registered models", () => {
-//       const stub = sinon.stub()
-//       const app = new MinioApp()
-
-      
-//     })
-//   })
-// })
+describe("MinioApp", () => {
+  describe("#create Minio App", () => {
+    it("should not throw an exception", () => {
+      const app = new MinioApp.App()
+      expect(app).is.not.null
+    })
+  })
+})
