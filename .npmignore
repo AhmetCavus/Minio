@@ -41,3 +41,9 @@ test/
 
 # public folder
 app/
+
+# environment
+.env
+
+# pipelines
+azure-pipelines.yml
