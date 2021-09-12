@@ -1,4 +1,4 @@
-﻿const pubSubService = require("../services/pubsub.service")()
+﻿const pubSubService = require("../services/pubsub.service")
 const collectionRepo = require("../repositories/collection.repository")
 const responseService = require("../services/response.service")
 

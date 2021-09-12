@@ -21,11 +21,13 @@ const Profile = require("./models/profile.model")
 const profileRepo = require("./repositories/profile.repository")
 const cors = require("./middleware/cors")
 const SupportedEngine = require("./db/supported.engine")
+const SocketService = require("./services/socket.service")
 
 const startServer = Symbol("startServer")
 const connectToDb = Symbol("connectToDb")
 const resolveCollections = Symbol("resolveCollections")
 const ensureCredentialsCollectionCreated = Symbol("ensureCredentialsCollectionCreated")
+const ensurePubSubServiceIsInitialized = Symbol("ensurePubSubServiceIsInitialized")
 
 /**
  * @description
@@ -140,7 +142,7 @@ class MinioApp {
       server.listen(port, () => {
         console.log("Minio app listening on port " + port)
       })
-      this.pubsubService = require("./services/pubsub.service")(server)
+      this[ensurePubSubServiceIsInitialized](server)
       Object.keys(this.collections).forEach(name => {
         this.collections[name].enableSocket()
       })
@@ -177,6 +179,12 @@ class MinioApp {
     })
     if (result.errors) throw new Error(result.errors)
   }
+
+  [ensurePubSubServiceIsInitialized](server) {
+    const socketService = new SocketService(require("./repositories/collection.repository"), require("./services/socket.engine"))
+    this.pubsubService = require("./services/pubsub.service")
+    this.pubsubService.init(socketService, server)
+  } 
 }
 
 module.exports = {

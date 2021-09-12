@@ -1,15 +1,12 @@
-﻿const SocketService = require("./socket.service")
-
-class PubSubService {
-  constructor(server) {
-    const collectionRepo = require("./../repositories/collection.repository")
-    const socketEngine = require("./socket.engine")
-    this.socketService = new SocketService(collectionRepo, socketEngine)
+﻿class PubSubService {
+  init(socketService, server) {
+    if(!socketService || !server) return
+    this.socketService = socketService
     this.socketService.init(server)
   }
 
   createChannel(channelName) {
-    var socketResult = socketService.createChannel(channelName)
+    var socketResult = this.socketService.createChannel(channelName)
 
     // TODO: Do other steps before delivering the result if neccessary
 
@@ -17,35 +14,28 @@ class PubSubService {
   }
 
   sendBroadcast(message, channelName) {
-    socketService.sendBroadcast(message, channelName)
+    this.socketService.sendBroadcast(message, channelName)
   }
 
   notifyAddCollectionItem(schema, item) {
-    socketService.notifyAddCollectionItem(schema, item)
+    this.socketService.notifyAddCollectionItem(schema, item)
   }
 
   notifyRemoveItem(schema, item) {
-    socketService.notifyRemoveCollectionItem(schema, item)
+    this.socketService.notifyRemoveCollectionItem(schema, item)
   }
 
   notifyUpdateCollection(schema, items) {
-    socketService.notifyUpdateCollection(schema, items)
+    this.socketService.notifyUpdateCollection(schema, items)
   }
 
   notifyUpdateCollectionItem(schema, item) {
-    socketService.notifyUpdateCollectionItem(schema, item)
+    this.socketService.notifyUpdateCollectionItem(schema, item)
   }
 
   setOnDisconnectedListener(onDisconnectListener) {
-    socketService.setOnDisconnectedListener(onDisconnectListener)
+    this.socketService.setOnDisconnectedListener(onDisconnectListener)
   }
 }
 
-let instance
-module.exports = server => {
-  if (!instance) {
-    if (!server) return
-    instance = new PubSubService(server)
-  }
-  return instance
-}
+module.exports = new PubSubService()

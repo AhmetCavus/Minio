@@ -11,6 +11,11 @@ const faker = require("faker")
 const { assert } = require("chai")
 
 describe("SocketService", () => {
+
+    // Arrange
+    const stubbedRepo = sinon.stub(collectionRepo)
+    const stubbedEngine = sinon.stub(socketEngine)
+
     it("should not throw an exception", () => {
         // Arrange & Act
         sinon.stub()
@@ -22,8 +27,6 @@ describe("SocketService", () => {
 
     it("should call init", () => {
         // Arrange
-        const stubbedRepo = sinon.stub(collectionRepo)
-        const stubbedEngine = sinon.stub(socketEngine)
         const sut = new SocketService(stubbedRepo, stubbedEngine)
 
         // Act
@@ -35,8 +38,6 @@ describe("SocketService", () => {
 
     it("should call createChannel", () => {
         // Arrange
-        const stubbedRepo = sinon.stub(collectionRepo)
-        const stubbedEngine = sinon.stub(socketEngine)
         const sut = new SocketService(stubbedRepo, stubbedEngine)
         const channelName = faker.name
 

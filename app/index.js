@@ -3,7 +3,7 @@ const Minio = require("../src/core/minio.app")
 const minio = new Minio.App()
 
 try {
-  minio.start().then(() => {
+  minio.start({ enableWebsocket: true }).then(() => {
     console.log("Minio is up and running")
   })
 } catch (error) {
