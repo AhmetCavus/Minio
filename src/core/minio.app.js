@@ -129,6 +129,10 @@ class MinioApp {
     callback(app, express)
   }
 
+  broadcast(message, channel) {
+    this.pubsubService.sendBroadcast(message, channel)
+  }
+
   async [startServer](options) {
     const port = options.port || 8080
     if (options.enableWebsocket) {
@@ -136,7 +140,7 @@ class MinioApp {
       server.listen(port, () => {
         console.log("Minio app listening on port " + port)
       })
-      require("./services/pubsub.service")(server)
+      this.pubsubService = require("./services/pubsub.service")(server)
       Object.keys(this.collections).forEach(name => {
         this.collections[name].enableSocket()
       })
