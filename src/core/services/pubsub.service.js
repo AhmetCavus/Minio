@@ -1,8 +1,11 @@
-﻿const socketService = require("./socket.service")
+﻿const SocketService = require("./socket.service")
 
 class PubSubService {
   constructor(server) {
-    socketService.init(server)
+    const collectionRepo = require("./../repositories/collection.repository")
+    const socketEngine = require("./socket.engine")
+    this.socketService = new SocketService(collectionRepo, socketEngine)
+    this.socketService.init(server)
   }
 
   createChannel(channelName) {

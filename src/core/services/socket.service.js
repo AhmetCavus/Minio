@@ -6,9 +6,9 @@ class SocketService {
     return socketEngine.isInitialized()
   }
 
-  constructor() {
-    this.collectionRepo = require("./../repositories/collection.repository")
-    this.socketEngine = require("./socket.engine")
+  constructor(collectionRepo, socketEngine) {
+    this.collectionRepo = collectionRepo
+    this.socketEngine = socketEngine
     this.socketEngine.setConnectedListener(this[onSocketConnected])
     this.socketEngine.setOnDisconnectedListener(this[onSocketDisconnected])
   }
@@ -57,4 +57,4 @@ class SocketService {
   }
 }
 
-module.exports = new SocketService()
+module.exports = SocketService
