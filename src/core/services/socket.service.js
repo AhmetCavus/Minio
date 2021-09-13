@@ -31,6 +31,8 @@ class SocketService {
 
   closeConnection(token, address) { this.socketEngine.closeConnection(token, address) }
 
+  sendBroadcast(message, channel) { this.socketEngine.broadCast(message, channel) }
+
   [onSocketDisconnected](user) {
     this.collectionRepo
       .updateItem("Profile", user.id, { isOnline: false, connectedSince: null })

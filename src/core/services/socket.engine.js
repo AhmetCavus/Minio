@@ -39,7 +39,7 @@ class SocketEngine {
     }
   }
 
-  broadCast(data, channel, socket) {
+  broadCast(data, channel) {
     channel.emit(SOCKET.EVENT_RECEIVE_BROADCAST, data)
   }
 

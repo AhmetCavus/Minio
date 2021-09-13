@@ -18,7 +18,6 @@ describe("SocketService", () => {
 
     it("should not throw an exception", () => {
         // Arrange & Act
-        sinon.stub()
         const sut = new SocketService(collectionRepo, socketEngine)
         
         // Assert
