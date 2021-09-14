@@ -1,6 +1,6 @@
 {
   "name": "minio-cms",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "A lightweight sandbox project providing features like authentication and socket communication",
   "main": "app.js",
   "dependencies": {
@@ -43,5 +43,6 @@
     "url": "https://github.com/AhmetCavus/minio"
   },
   "author": "Ahmet Cavus",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": ["minio", "cms", "headless", "mongodb", "bootstrap"]
 }
