@@ -1,4 +1,4 @@
-const getChannel = Symbol("getChannel")
+const getOrCreateChannel = Symbol("getOrCreateChannel")
 const onConnection = Symbol("onConnection")
 const onDisconnect = Symbol("onDisconnect")
 const refreshUsers = Symbol("refreshUsers")
@@ -53,7 +53,7 @@ class SocketEngine {
   }
 
   createChannel(channelName) {
-    const channel = this[getChannel](channelName)
+    const channel = this[getOrCreateChannel](channelName)
     if (channel && !channel.initialized) {
       // Consider to use channel.once to avoid multiple events
       channel.on(SOCKET.EVENT_CONNECTION, socket => {
@@ -190,7 +190,7 @@ class SocketEngine {
     this.onDisconnectedListener = onDisconectedListener
   }
 
-  [getChannel](channelId) {
+  [getOrCreateChannel](channelId) {
     let channel
     const filtered = this.channels.filter(item => {
       return item.id === channelId
