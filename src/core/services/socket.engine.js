@@ -3,10 +3,14 @@ const onConnection = Symbol("onConnection")
 const onDisconnect = Symbol("onDisconnect")
 const refreshUsers = Symbol("refreshUsers")
 const initSocketEvents = Symbol("initSocketEvents")
+const isNotInstanceOfServer = Symbol("isNotInstanceOfServer")
 
+const http = require("http")
+const https = require("https")
 const _ = require("lodash")
 const jwt = require("jsonwebtoken")
 const socketioJwt = require("socketio-jwt")
+const { Server } = require("socket.io")
 
 const SOCKET = require("./socket.key")
 const ERROR = require("./error.key")
@@ -26,8 +30,8 @@ class SocketEngine {
 
   init(server) {
     try {
-      this.io = require("socket.io")(server)
-
+      if(this[isNotInstanceOfServer](server)) throw new SocketConnectionException("Invalid parameter")
+      this.io = new Server(server)
       this.io.use(
         socketioJwt.authorize({
           secret: process.env.JWT_SECRET,
@@ -37,6 +41,11 @@ class SocketEngine {
     } catch (error) {
       throw new SocketConnectionException(error)
     }
+  }
+
+  [isNotInstanceOfServer](server) {
+    const result = (server instanceof http.Server) || (server instanceof https.Server)
+    return !result
   }
 
   broadCast(data, channel) {
@@ -260,4 +269,4 @@ class SocketEngine {
   }
 }
 
-module.exports = new SocketEngine()
+module.exports = SocketEngine

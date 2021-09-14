@@ -13,6 +13,7 @@ const morgan = require("morgan")
 const DbAdapterFactory = require("./db/db.adapter.factory")
 const DbSchemaFactory = require("./db/db.schema.factory")
 const DbService = require("./db/db.service")
+const SocketEngine = require("./services/socket.engine")
 const adminRoutes = require("./routes/admin.route")
 const authRoutes = require("./routes/auth.route")
 const collectionRoutes = require("./routes/collection.route")
@@ -139,10 +140,10 @@ class MinioApp {
     const port = options.port || 8080
     if (options.enableWebsocket) {
       const server = require("http").Server(app)
+      this[ensurePubSubServiceIsInitialized](server)
       server.listen(port, () => {
         console.log("Minio app listening on port " + port)
       })
-      this[ensurePubSubServiceIsInitialized](server)
       Object.keys(this.collections).forEach(name => {
         this.collections[name].enableSocket()
       })
@@ -181,7 +182,7 @@ class MinioApp {
   }
 
   [ensurePubSubServiceIsInitialized](server) {
-    const socketService = new SocketService(require("./repositories/collection.repository"), require("./services/socket.engine"))
+    const socketService = new SocketService(require("./repositories/collection.repository"), new SocketEngine())
     this.pubsubService = require("./services/pubsub.service")
     this.pubsubService.init(socketService, server)
   } 

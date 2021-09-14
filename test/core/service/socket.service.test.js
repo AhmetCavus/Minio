@@ -2,7 +2,7 @@ require("regenerator-runtime")
 
 const SocketService = require("./../../../src/core/services/socket.service")
 const collectionRepo = require("./../../../src/core/repositories/collection.repository")
-const socketEngine = require("./../../../src/core/services/socket.engine")
+const SocketEngine = require("./../../../src/core/services/socket.engine")
 
 const chai = require("chai")
 const sinon = require("sinon")
@@ -14,11 +14,11 @@ describe("SocketService", () => {
 
     // Arrange
     const stubbedRepo = sinon.stub(collectionRepo)
-    const stubbedEngine = sinon.stub(socketEngine)
+    const stubbedEngine = sinon.createStubInstance(SocketEngine)
 
     it("should not throw an exception", () => {
         // Arrange & Act
-        const sut = new SocketService(collectionRepo, socketEngine)
+        const sut = new SocketService(stubbedRepo, stubbedEngine)
         
         // Assert
         expect(sut).is.not.null
@@ -32,7 +32,7 @@ describe("SocketService", () => {
         sut.init({})
 
         // Assert
-        assert.isTrue(stubbedEngine.init.calledOnce)
+        sinon.assert.calledOnce(stubbedEngine.init)
     })
 
     it("should call createChannel", () => {
@@ -44,6 +44,6 @@ describe("SocketService", () => {
         sut.createChannel(channelName)
 
         // Assert
-        assert.isTrue(stubbedEngine.createChannel.calledOnceWith(channelName))
+        sinon.assert.calledOnceWithExactly(stubbedEngine.createChannel, channelName)
     })
 })
