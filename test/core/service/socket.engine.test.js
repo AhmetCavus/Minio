@@ -21,7 +21,7 @@ describe("SocketEngine", () => {
             
             // Act + Assert
             assert.throws(() => {
-                socketEngine.init(invalidParameter)
+                socketEngine.init(invalidParameter, { jwtSecret: "do.not.read.it.is.jwt.secret" })
             }, Error) 
         })
     })
@@ -46,7 +46,7 @@ describe("SocketEngine", () => {
             const server = new Server() 
 
             // Act
-            socketEngine.init(server)
+            socketEngine.init(server, { jwtSecret: "do.not.read.it.is.jwt.secret" })
             const isInitialized = socketEngine.isInitialized
 
             // Assert
@@ -61,7 +61,7 @@ describe("SocketEngine", () => {
             const channelName = faker.datatype.uuid()
 
             // Act
-            socketEngine.init(server)
+            socketEngine.init(server, { jwtSecret: "do.not.read.it.is.jwt.secret" })
             const channel = socketEngine.createChannel(channelName)
 
             // Assert
@@ -77,7 +77,7 @@ describe("SocketEngine", () => {
             const item = faker.datatype.uuid()
 
             // Act
-            socketEngine.init(server)
+            socketEngine.init(server, { jwtSecret: "do.not.read.it.is.jwt.secret" })
 
             // Assert
             assert.doesNotThrow(() => {
@@ -94,7 +94,7 @@ describe("SocketEngine", () => {
             const item = faker.datatype.uuid()
 
             // Act
-            socketEngine.init(server)
+            socketEngine.init(server, { jwtSecret: "do.not.read.it.is.jwt.secret" })
 
             // Assert
             assert.doesNotThrow(() => {
@@ -111,7 +111,7 @@ describe("SocketEngine", () => {
             const items = faker.datatype.uuid()
 
             // Act
-            socketEngine.init(server)
+            socketEngine.init(server, { jwtSecret: "do.not.read.it.is.jwt.secret" })
 
             // Assert
             assert.doesNotThrow(() => {
@@ -128,7 +128,7 @@ describe("SocketEngine", () => {
             const item = faker.datatype.uuid()
 
             // Act
-            socketEngine.init(server)
+            socketEngine.init(server, { jwtSecret: "do.not.read.it.is.jwt.secret" })
 
             // Assert
             assert.doesNotThrow(() => {
@@ -145,7 +145,7 @@ describe("SocketEngine", () => {
             const stubbedEmit = sinon.stub(emitQueue)
 
             // Act
-            socketEngine.init(server)
+            socketEngine.init(server, { jwtSecret: "do.not.read.it.is.jwt.secret" })
             socketEngine.notifyUsersChanged(stubbedChannel)
 
             // Assert

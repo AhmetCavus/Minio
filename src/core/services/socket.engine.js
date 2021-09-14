@@ -28,13 +28,14 @@ class SocketEngine {
     this.emitQueue = require("../services/emit.queue")
   }
 
-  init(server) {
+  init(server, opt) {
     try {
       if(this[isNotInstanceOfServer](server)) throw new SocketConnectionException("Invalid parameter")
       this.io = new Server(server)
+      const jwtSecret = opt && opt.jwtSecret ? opt.jwtSecret : process.env.JWT_SECRET 
       this.io.use(
         socketioJwt.authorize({
-          secret: process.env.JWT_SECRET,
+          secret: jwtSecret,
           handshake: true,
         })
       )
