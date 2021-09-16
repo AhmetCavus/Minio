@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcryptjs")
 const profileRepo = require("../repositories/profile.repository")
 const tokenService = require("./../services/token.service")
 const InvalidCredentialsException = require("../exceptions/invalidcredentials.exception")
