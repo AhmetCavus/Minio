@@ -27,6 +27,8 @@ const SocketService = require("./services/socket.service")
 const startServer = Symbol("startServer")
 const connectToDb = Symbol("connectToDb")
 const resolveCollections = Symbol("resolveCollections")
+const ensureServerCreated = Symbol("ensureServerCreated")
+const ensureSocketsEnabled = Symbol("ensureSocketsEnabled")
 const ensureCredentialsCollectionCreated = Symbol("ensureCredentialsCollectionCreated")
 const ensurePubSubServiceIsInitialized = Symbol("ensurePubSubServiceIsInitialized")
 
@@ -138,20 +140,17 @@ class MinioApp {
 
   async [startServer](options) {
     const port = options.port || 8080
+    let server = {}
     if (options.enableWebsocket) {
-      const server = require("http").Server(app)
+      server = this[ensureServerCreated](options, app)
       this[ensurePubSubServiceIsInitialized](server)
-      server.listen(port, () => {
-        console.log("Minio app listening on port " + port)
-      })
-      Object.keys(this.collections).forEach(name => {
-        this.collections[name].enableSocket()
-      })
+      this[ensureSocketsEnabled]()
     } else {
-      app.listen(port, () => {
-        console.log("Minio app listening on port " + port)
-      })
+      server = this[ensureServerCreated](options, app)
     }
+    server.listen(port, () => {
+      console.log("Minio app listening on port " + port)
+    })
   }
 
   async [connectToDb]() {
@@ -185,7 +184,28 @@ class MinioApp {
     const socketService = new SocketService(require("./repositories/collection.repository"), new SocketEngine())
     this.pubsubService = require("./services/pubsub.service")
     this.pubsubService.init(socketService, server)
-  } 
+  }
+  
+  [ensureServerCreated](options, app) {
+    if(options.isHttps) {
+      const fs = require('fs');
+      const sslOptions = {
+        key: fs.readFileSync(options.sslKey),
+        cert: fs.readFileSync(options.sslCert)
+      }
+      const server = require("https").ensureServerCreated(sslOptions, app)
+      return server
+    } else {
+      const server = require("http").Server(app)
+      return server
+    }
+  }
+
+  [ensureSocketsEnabled]() {
+    Object.keys(this.collections).forEach(name => {
+      this.collections[name].enableSocket()
+    })
+  }
 }
 
 module.exports = {

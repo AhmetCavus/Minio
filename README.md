@@ -89,6 +89,9 @@ minio.start(options)
 | port            | Specify the port                                                           | 8080                                       |
 | modelPath       | The path of the models, that should be registered in the db                | models                                     |
 | enableWebsocket | Whether to enable the websocket support or not                             | False                                      |
+| isHttps         | Whether run in Https mode or not                                           | False                                      |
+| sslKey          | Specify the path of the ssl key if https mode is enabled                   | e.g. /etc/domain-name/privkey.pem          |
+| sslCert         | Specify the path of the ssl cert if https mode is enabled                  | e.g. /etc/domain-name/fullchain.pem        | 
 
 ### Accessing to collections
 
@@ -112,11 +115,11 @@ For every model schema in your models path, a collection will be created in the 
 
 ### API calls
 
-An OpenAPI Spec will be provided here. TBD
+The OpenAPI Spec of Minio is provided here [Minio.Spec](https://github.com/AhmetCavus/Minio.Spec)
 
 ### Creating models
 
-For instructions of creating models, you can check the docu of the classic KeystoneJS [How to create models](https://v4.keystonejs.com/api/field/options)
+For instructions of creating models, you can check the [profile model](./src/core/models/profile.model.js)
 
 In order to create nested list, check following sample file: [TodoModel](./app/models/todo.js)
 
@@ -142,19 +145,16 @@ npm test
 **Database:**
 
 - MongoDB >= 3.6
-- ...
 
 **We recommend always using the latest version of minio to start your new projects**.
 
 ## Features
 
-- **Auth service:**
-- **Token service:**
-- **Auto db connection:**
-- **Model service:**
-- **Web socket support:**
-
-## Roadmap
+- **Auth service**
+- **Token service**
+- **Auto db connection**
+- **Model service**
+- **Web socket support**
 
 ## License
 
