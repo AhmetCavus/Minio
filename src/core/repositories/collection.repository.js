@@ -1,6 +1,7 @@
 const SOCKET = require("../services/socket.key")
 const ERROR = require("../services/error.key")
 const resolveSchema = Symbol("resolveSchema")
+const _ = require("lodash")
 
 class CollectionRepository {
   update(schema, content) {
@@ -158,7 +159,7 @@ class CollectionRepository {
     })
   }
 
-  getCollection(schema, relations, date) {
+  getCollection(schema, relations, isJson, date) {
     return new Promise((resolve, reject) => {
       if (schema) {
         try {
@@ -174,7 +175,13 @@ class CollectionRepository {
               if (err) {
                 reject(err)
               } else {
-                resolve(items)
+                let result = {}
+                if(isJson) {
+                  result = _(items).map(i => { return { json: JSON.stringify(i) }})
+                } else {
+                  result = items
+                }
+                resolve(result)
               }
             })
         } catch (err) {

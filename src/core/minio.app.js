@@ -17,7 +17,8 @@ const SocketEngine = require("./services/socket.engine")
 const adminRoutes = require("./routes/admin.route")
 const authRoutes = require("./routes/auth.route")
 const collectionRoutes = require("./routes/collection.route")
-const authMiddleware = require("./middleware/auth")
+const channelRoutes = require("./routes/channel.route")
+const authMiddleware = require("./middleware/api.auth")
 const Profile = require("./models/profile.model")
 const profileRepo = require("./repositories/profile.repository")
 const cors = require("./middleware/cors")
@@ -99,6 +100,7 @@ class MinioApp {
     app.use("/authenticate", authRoutes)
     app.use("/admin", authMiddleware, adminRoutes)
     app.use("/collection", authMiddleware, collectionRoutes)
+    app.use("/channel", authMiddleware, channelRoutes)
     module.exports.instance = this
   }
 
@@ -181,7 +183,8 @@ class MinioApp {
   }
 
   [ensurePubSubServiceIsInitialized](server) {
-    const socketService = new SocketService(require("./repositories/collection.repository"), new SocketEngine())
+    const collectionRepo = require("./repositories/collection.repository");
+    const socketService = new SocketService(collectionRepo, new SocketEngine())
     this.pubsubService = require("./services/pubsub.service")
     this.pubsubService.init(socketService, server)
   }

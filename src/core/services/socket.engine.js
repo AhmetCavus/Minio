@@ -9,13 +9,14 @@ const http = require("http")
 const https = require("https")
 const _ = require("lodash")
 const jwt = require("jsonwebtoken")
-const socketioJwt = require("socketio-jwt")
+const socketAuthMiddleware = require('./../middleware/socket.auth')
 const { Server } = require("socket.io")
 
 const SOCKET = require("./socket.key")
 const ERROR = require("./error.key")
 const Minio = require("../minio.app")
 const SocketConnectionException = require("../exceptions/socketconnection.exception")
+const responseService = require("./response.service")
 
 class SocketEngine {
   get isInitialized() {
@@ -32,13 +33,8 @@ class SocketEngine {
     try {
       if(this[isNotInstanceOfServer](server)) throw new SocketConnectionException("Invalid parameter")
       this.io = new Server(server)
-      const jwtSecret = opt && opt.jwtSecret ? opt.jwtSecret : process.env.JWT_SECRET 
-      this.io.use(
-        socketioJwt.authorize({
-          secret: jwtSecret,
-          handshake: true,
-        })
-      )
+      process.env.JWT_SECRET = opt && opt.jwtSecret ? opt.jwtSecret : process.env.JWT_SECRET
+      this.io.use(socketAuthMiddleware)
     } catch (error) {
       throw new SocketConnectionException(error)
     }
@@ -54,7 +50,7 @@ class SocketEngine {
   }
 
   createChannel(channelName) {
-    const channel = this[getOrCreateChannel](channelName)
+    const channel = this[getOrCreateChannel](channelName.toLowerCase())
     if (channel && !channel.initialized) {
       // Consider to use channel.once to avoid multiple events
       channel.on(SOCKET.EVENT_CONNECTION, socket => {
@@ -65,7 +61,8 @@ class SocketEngine {
       })
       channel.initialized = true
     }
-    return channel
+    if(channel !== null) return responseService.createSuccess("createdChannel", channelName);
+    else return responseService.createFail();
   }
 
   notifyAddCollectionItem(schema, item) {
@@ -132,7 +129,7 @@ class SocketEngine {
       socket.emit(SOCKET.EVENT_ERROR, res)
     } else {
       var user = filtered[0]
-      var otherSocket = channel.sockets[user.socketId]
+      var otherSocket = channel.sockets.get(user.socketId)
       if (!otherSocket) {
         var res = {
           success: false,
@@ -140,8 +137,9 @@ class SocketEngine {
           key: SOCKET.COMMAND_SEND_PRIVATE_MESSAGE,
         }
         socket.emit(SOCKET.EVENT_ERROR, res)
+      } else {
+        otherSocket.emit(SOCKET.EVENT_RECEIVE_PRIVATE_MESSAGE, data)
       }
-      otherSocket.emit(SOCKET.EVENT_RECEIVE_PRIVATE_MESSAGE, data)
     }
   }
 
@@ -198,6 +196,7 @@ class SocketEngine {
     })
     if (!filtered || filtered.length <= 0) {
       channel = this.io.of("/" + channelId)
+      channel.use(socketAuthMiddleware)
       channel.id = channelId
       this.channels.push(channel)
     } else {

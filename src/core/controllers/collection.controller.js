@@ -7,6 +7,7 @@ exports.getCollection = (req, res) => {
     .getCollection(
       req.params.schema,
       req.params.relations === undefined ? "" : req.params.relations,
+      req.query.isJson,
       req.query.createdAt
     )
     .then(collection => res.status(200).json(collection))
@@ -30,9 +31,9 @@ exports.updateCollection = (req, res) => {
 exports.addCollectionItem = (req, res) => {
   collectionRepo
     .addItem(req.params.schema, req.body)
-    .then(collection => {
-      res.status(200).json(collection)
-      pubSubService.notifyAddCollectionItem(req.params.schema, collection)
+    .then(item => {
+      res.status(200).json(item)
+      pubSubService.notifyAddCollectionItem(req.params.schema, item)
     })
     .catch(error => {
       res.status(400).json(responseService.createFail("error", error))
@@ -54,9 +55,9 @@ exports.updateCollectItem = (req, res) => {
 exports.removeCollectionItem = (req, res) => {
   collectionRepo
     .removeItem(req.params.schema, req.params.id)
-    .then(collection => {
-      res.status(200).json(collection)
-      pubSubService.notifyRemoveItem(req.params.schema, collection)
+    .then(item => {
+      res.status(200).json(item)
+      pubSubService.notifyRemoveItem(req.params.schema, item)
     })
     .catch(error => {
       res.status(400).json(responseService.createFail("error", error))

@@ -2,6 +2,7 @@
 const onSocketDisconnected = Symbol("onSocketDisconnected")
 
 class SocketService {
+
   get isInitialized() {
     return socketEngine.isInitialized()
   }
@@ -9,15 +10,17 @@ class SocketService {
   constructor(collectionRepo, socketEngine) {
     this.collectionRepo = collectionRepo
     this.socketEngine = socketEngine
-    this.socketEngine.setConnectedListener(this[onSocketConnected])
-    this.socketEngine.setOnDisconnectedListener(this[onSocketDisconnected])
+    this.socketEngine.setConnectedListener.bind(this)
+    this.socketEngine.setOnDisconnectedListener.bind(this)
+    this.socketEngine.setConnectedListener(user => this[onSocketConnected](user, collectionRepo))
+    this.socketEngine.setOnDisconnectedListener(user => this[onSocketDisconnected](user, collectionRepo))
   }
 
   init(server) {
     this.socketEngine.init(server)
   }
 
-  createChannel(channelName) { this.socketEngine.createChannel(channelName) }
+  createChannel(channelName) { return this.socketEngine.createChannel(channelName) }
 
   notifyAddCollectionItem(schema, item) { this.socketEngine.notifyAddCollectionItem(schema, item) }
 
@@ -33,8 +36,8 @@ class SocketService {
 
   sendBroadcast(message, channel) { this.socketEngine.broadCast(message, channel) }
 
-  [onSocketDisconnected](user) {
-    this.collectionRepo
+  [onSocketDisconnected](user, collectionRepo) {
+    collectionRepo
       .updateItem("Profile", user.id, { isOnline: false, connectedSince: null })
       .then(result => {
         console.log("Disconnected: ", user)
@@ -44,8 +47,8 @@ class SocketService {
       })
   }
 
-  [onSocketConnected](user) {
-    this.collectionRepo
+  [onSocketConnected](user, collectionRepo) {
+    collectionRepo
       .updateItem("Profile", user.id, {
         isOnline: true,
         connectedSince: Date.now(),
