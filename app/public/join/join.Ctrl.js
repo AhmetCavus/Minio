@@ -21,38 +21,20 @@
     var account
 
     $scope.join = function () {
-      fetch("/authenticate", {
-        method: "POST",
-        body: JSON.stringify({
-          email: $scope.clientId,
-          password: $scope.secretId,
-        }),
-        mode: "cors", // no-cors, *cors, same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, *same-origin, omit
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
+      axios.post("authenticate", {
+        email: $scope.clientId,
+        password: $scope.secretId,
       })
-        .then(response => response.json())
-        .then(tokenResult => {
-          fetch("/channel/" + $scope.channelId, {
-            method: "POST",
-            mode: "cors", // no-cors, *cors, same-origin
-            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: "same-origin", // include, *same-origin, omit
+      .then(tokenResult => {
+        axios.post("channel/" + $scope.channelId, {}, {
             headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer " + tokenResult.token
-              // 'Content-Type': 'application/x-www-form-urlencoded',
+              "Authorization": "Bearer " + tokenResult.data.token
             },
           })
-          .then(response => response.json())
           .then(channelResult => {
-            $scope.token = tokenResult.token
+            $scope.token = tokenResult.data.token
             $scope.info = $scope.token
-            $scope.info = JSON.stringify(channelResult)
+            $scope.info = JSON.stringify(channelResult.data)
             socket.connect($scope.token, $scope.channelId)
             socket.on("connect", onSocketConnected)
             socket.on("disconnect", onSocketDisconnected)
