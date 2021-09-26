@@ -15,7 +15,7 @@ function createChannelAction(req, res) {
     }
 }
 
-function getChannelsAction(res, res) {
+function getChannelsAction(req, res) {
     res.status(200).json([])
 }
 
