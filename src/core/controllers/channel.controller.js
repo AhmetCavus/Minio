@@ -7,7 +7,7 @@ module.exports = {
 };
 
 function createChannelAction(req, res) {
-    var result = pubSubService.createChannel(req.params.channelId);
+    var result = pubSubService.createChannel(req.params.channelId ? req.params.channelId : "");
     if(result.success) {
         res.status(200).json(result);
     } else {

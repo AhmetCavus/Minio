@@ -14,7 +14,6 @@ const { Server } = require("socket.io")
 
 const SOCKET = require("./socket.key")
 const ERROR = require("./error.key")
-const Minio = require("../minio.app")
 const SocketConnectionException = require("../exceptions/socketconnection.exception")
 const responseService = require("./response.service")
 
@@ -35,6 +34,7 @@ class SocketEngine {
       this.io = new Server(server)
       process.env.JWT_SECRET = opt && opt.jwtSecret ? opt.jwtSecret : process.env.JWT_SECRET
       this.io.use(socketAuthMiddleware)
+      this[getOrCreateChannel]("")
     } catch (error) {
       throw new SocketConnectionException(error)
     }
@@ -146,7 +146,7 @@ class SocketEngine {
   requestCollection(data, socket) {
     if (data && data.schema) {
       try {
-        const Schema = Minio.instance.collection(data.schema)
+        const Schema = require("../minio.app").Instance.collection(data.schema)
         if (data.condition) {
           Schema.model
             .find()

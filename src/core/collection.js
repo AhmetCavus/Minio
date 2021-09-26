@@ -6,7 +6,6 @@ class Collection {
 
   enableSocket() {
     this.pubSubService = require("./services/pubsub.service")
-    this.pubSubService.createChannel(this.collectionName)
   }
 
   convertToSchema(callback) {

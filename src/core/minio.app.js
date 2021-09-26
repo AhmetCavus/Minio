@@ -79,6 +79,7 @@ const ensurePubSubServiceIsInitialized = Symbol("ensurePubSubServiceIsInitialize
  */
 class MinioApp {
   constructor() {
+    module.exports.Instance = this;
     this.mainDir = path.dirname(require.main.filename)
     this.config = require('./config/minio.config')
     this.dbService = new DbService(
@@ -213,6 +214,7 @@ class MinioApp {
 
 module.exports = {
   App: MinioApp,
+  Instance: undefined,
   Collection: require("./collection"),
   Provider: require("./type/provider")
 }
