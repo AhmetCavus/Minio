@@ -115,7 +115,7 @@ For every model schema in your models path, a collection will be created in the 
 
 ### Socket events
 
-The table below lists all necessary events that are subsribable for getting or sending notifications. 
+The table below lists all necessary events that are subscribable for getting or sending notifications. 
 
 | Key | Parameter / Options | Response | Description |
 | :- | :- | :- | :- |
