@@ -141,15 +141,19 @@ class MinioApp {
     this.pubsubService.sendBroadcast(message, channel)
   }
 
+  subscribeOn(event, channel) {
+    this.pubsubService.subscribeOn(event, channel)
+  }
+
   async [startServer](options) {
     const port = options.port || 8080
     let server = {}
     if (options.enableWebsocket) {
-      server = this[ensureServerCreated](options, app)
+      server = this[ensureServerCreated](app)
       this[ensurePubSubServiceIsInitialized](server)
       this[ensureSocketsEnabled]()
     } else {
-      server = this[ensureServerCreated](options, app)
+      server = this[ensureServerCreated](app)
     }
     server.listen(port, () => {
       console.log("Minio app listening on port " + port)
@@ -190,12 +194,13 @@ class MinioApp {
     this.pubsubService.init(socketService, server)
   }
   
-  [ensureServerCreated](options, app) {
-    if(options.isHttps) {
+  [ensureServerCreated](app) {
+    const { isHttps, sslKey, sslCert } = this.config
+    if(isHttps) {
       const fs = require('fs');
       const sslOptions = {
-        key: fs.readFileSync(options.sslKey),
-        cert: fs.readFileSync(options.sslCert)
+        key: fs.readFileSync(sslKey),
+        cert: fs.readFileSync(sslCert)
       }
       const server = require("https").ensureServerCreated(sslOptions, app)
       return server

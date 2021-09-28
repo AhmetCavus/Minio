@@ -10,6 +10,9 @@ const minioConfig = {
   dbEngine: process.env.DBENGINE,
   authDb: process.env.DBAUTH,
   modelDir: process.env.MODELDIR,
+  isHttps: process.env.IS_HTTPS === 'true' || process.env.IS_HTTPS === 'True',
+  sslKey: process.env.SSL_KEY,
+  sslCert: process.env.SSL_CERT 
 }
 
 module.exports = minioConfig

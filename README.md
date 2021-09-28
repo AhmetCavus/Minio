@@ -52,6 +52,9 @@ JWT_SECRET=do.not.read.it.is.jwt.secret
 VERIFY_SIGNATURE=i.can.open.doors
 CLIENT_ID=alone.i.am.useless
 SECRET_ID=do.not.read.it.is.client.secret
+SSL_KEY=e.g. /etc/domain-name/privkey.pem
+SSL_CERT=e.g. /etc/domain-name/fullchain.pem
+IS_HTTPS=true/false
 ```
 
 Be aware of commiting this file in your repo!!!
@@ -87,11 +90,8 @@ minio.start(options)
 | Key             | Description                                                                | Default                                    |
 | -----------     | :------------------------------------------------------------------------- | :----------------------------------------- |
 | port            | Specify the port                                                           | 8080                                       |
-| modelPath       | The path of the models, that should be registered in the db                | models                                     |
-| enableWebsocket | Whether to enable the websocket support or not                             | False                                      |
-| isHttps         | Whether run in Https mode or not                                           | False                                      |
-| sslKey          | Specify the path of the ssl key if https mode is enabled                   | e.g. /etc/domain-name/privkey.pem          |
-| sslCert         | Specify the path of the ssl cert if https mode is enabled                  | e.g. /etc/domain-name/fullchain.pem        | 
+| modelDir        | The path of the models, that should be registered in the db                | models                                     |
+| enableWebsocket | Whether to enable the websocket support or not                             | false                                      |
 
 ### Accessing to collections
 
@@ -113,6 +113,35 @@ After that, minio provides you convenient methods to notify observers
 
 For every model schema in your models path, a collection will be created in the database. In addition, it will be supplied with bi-directional communication through sockets. You can get further detail in the API calls section.
 
+### Socket events
+
+The table below lists all necessary events that are subsribable for getting or sending notifications. 
+
+| Key | Parameter / Options | Response | Description |
+| :- | :- | :- |
+| COMMAND_REQUEST_COLLECTION | { schema: "required - String", condition: { whereKey: "String", whereValue: "String" } } | | Request a collection that is placed in one of the models folder |
+| EVENT_RECEIVE_COLLECTION | | [] | An array of the requested models |
+| COMMAND_SEND_BROADCAST | { from: "String", to: "String", message: "String" } | | Sends a broadcast to all members of the specified namespace |
+| EVENT_RECEIVE_BROADCAST | | { from: "String", to: "String", message: "String" } | Subscribes for incoming broadcasts | 
+| COMMAND_SEND_PRIVATE_MESSAGE | { from: "String", to: "String", message: "String" } | | Sends a private message to the member of the specified namespace |
+| EVENT_RECEIVE_PRIVATE_MESSAGE | | { from: "String", to: "String", message: "String" } | Subscribes for incoming private messages | 
+| COMMAND_COLLECTION_ADD_ITEM | The item to add | | Notifies all members of the namespace that a new item was added to the collection |
+| EVENT_COLLECTION_ADD_ITEM | | The added item | Subscribes for incoming events about recently added items |
+| COMMAND_COLLECTION_REMOVE_ITEM | The item to remove | | Notifies all members of the namespace that a new item was removed from the collection |
+| EVENT_COLLECTION_REMOVE_ITEM | | The removed item | Subscribes for incoming events about recently removed items |
+| COMMAND_COLLECTION_UPDATE_ITEM | The item to update | | Notifies all members of the namespace that a new item was updated in the collection |
+| EVENT_COLLECTION_UPDATE_ITEM | | The updated item | Subscribes for incoming events about recently updated items |
+
+You can also register more events regarding those from Socket.IO by invoking the method
+```nodejs
+minio.subscribeOn(event, channel, callback)
+```
+```
+event = The name of the event as String
+channel = The channel name as String
+callback = The callback for retrieving data if exists
+```
+
 ### API calls
 
 The OpenAPI Spec of Minio is provided here [Minio.Spec](https://github.com/AhmetCavus/Minio.Spec)
@@ -129,7 +158,7 @@ npm start
 
 ### Playground
 
-You can enter the playground by calling ```localhost``` in your browser.
+You can enter the playground by calling ```localhost:[Port]``` in your browser.
 
 ### Tests
 
@@ -147,6 +176,12 @@ npm test
 - MongoDB >= 3.6
 
 **We recommend always using the latest version of minio to start your new projects**.
+
+## Clients
+
+Dart / Flutter [Minio.ClientDart](https://github.com/AhmetCavus/Minio.ClientDart)
+Javascript *In progress*
+.Net C# *In progress*
 
 ## Features
 

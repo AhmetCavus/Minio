@@ -5,16 +5,16 @@
     this.socketService.init(server)
   }
 
-  createChannel(channelName) {
-    var socketResult = this.socketService.createChannel(channelName)
+  createChannel(channel) {
+    var socketResult = this.socketService.createChannel(channel)
 
     // TODO: Do other steps before delivering the result if neccessary
 
     return socketResult
   }
 
-  sendBroadcast(message, channelName) {
-    this.socketService.sendBroadcast(message, channelName)
+  sendBroadcast(message, channel) {
+    this.socketService.sendBroadcast(message, channel)
   }
 
   notifyAddCollectionItem(schema, item) {
@@ -35,6 +35,10 @@
 
   setOnDisconnectedListener(onDisconnectListener) {
     this.socketService.setOnDisconnectedListener(onDisconnectListener)
+  }
+
+  subscribeOn(event, channel) {
+    this.socketService.subscribeOn(event, channel);
   }
 }
 

@@ -16,6 +16,7 @@ const SOCKET = require("./socket.key")
 const ERROR = require("./error.key")
 const SocketConnectionException = require("../exceptions/socketconnection.exception")
 const responseService = require("./response.service")
+const { Socket } = require("dgram")
 
 class SocketEngine {
   get isInitialized() {
@@ -38,11 +39,6 @@ class SocketEngine {
     } catch (error) {
       throw new SocketConnectionException(error)
     }
-  }
-
-  [isNotInstanceOfServer](server) {
-    const result = (server instanceof http.Server) || (server instanceof https.Server)
-    return !result
   }
 
   broadCast(data, channel) {
@@ -187,6 +183,17 @@ class SocketEngine {
 
   setOnDisconnectedListener(onDisconectedListener) {
     this.onDisconnectedListener = onDisconectedListener
+  }
+
+  [isNotInstanceOfServer](server) {
+    const result = (server instanceof http.Server) || (server instanceof https.Server)
+    return !result
+  }
+
+  subscribeOn(event, channel, callback) {
+    const socket = this[getOrCreateChannel](channel)
+    if(socket === null) return
+    socket.on(event, callback)
   }
 
   [getOrCreateChannel](channelId) {

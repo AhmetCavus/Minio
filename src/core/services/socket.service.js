@@ -20,7 +20,7 @@ class SocketService {
     this.socketEngine.init(server)
   }
 
-  createChannel(channelName) { return this.socketEngine.createChannel(channelName) }
+  createChannel(channel) { return this.socketEngine.createChannel(channel) }
 
   notifyAddCollectionItem(schema, item) { this.socketEngine.notifyAddCollectionItem(schema, item) }
 
@@ -35,6 +35,8 @@ class SocketService {
   closeConnection(token, address) { this.socketEngine.closeConnection(token, address) }
 
   sendBroadcast(message, channel) { this.socketEngine.broadCast(message, channel) }
+
+  subscribeOn(event, channel) { this.socketEngine.subscribeOn(event, channel) }
 
   [onSocketDisconnected](user, collectionRepo) {
     collectionRepo
