@@ -202,7 +202,7 @@ class MinioApp {
         key: fs.readFileSync(sslKey),
         cert: fs.readFileSync(sslCert)
       }
-      const server = require("https").ensureServerCreated(sslOptions, app)
+      const server = require("https").Server(sslOptions, app)
       return server
     } else {
       const server = require("http").Server(app)
