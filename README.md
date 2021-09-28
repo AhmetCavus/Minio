@@ -118,7 +118,7 @@ For every model schema in your models path, a collection will be created in the 
 The table below lists all necessary events that are subsribable for getting or sending notifications. 
 
 | Key | Parameter / Options | Response | Description |
-| :- | :- | :- |
+| :- | :- | :- | :- |
 | COMMAND_REQUEST_COLLECTION | { schema: "required - String", condition: { whereKey: "String", whereValue: "String" } } | | Request a collection that is placed in one of the models folder |
 | EVENT_RECEIVE_COLLECTION | | [] | An array of the requested models |
 | COMMAND_SEND_BROADCAST | { from: "String", to: "String", message: "String" } | | Sends a broadcast to all members of the specified namespace |
@@ -179,9 +179,9 @@ npm test
 
 ## Clients
 
-Dart / Flutter [Minio.ClientDart](https://github.com/AhmetCavus/Minio.ClientDart)
-Javascript *In progress*
-.Net C# *In progress*
+- Dart / Flutter [Minio.ClientDart](https://github.com/AhmetCavus/Minio.ClientDart)
+- Javascript *In progress*
+- .Net C# *In progress*
 
 ## Features
 
