@@ -2,4 +2,4 @@ const BaseType = require("./basetype")
 
 class Decimal extends BaseType {}
 
-module.exports = Decimal
+module.exports = new Decimal()

@@ -2,4 +2,4 @@ const BaseType = require("./basetype")
 
 class String extends BaseType {}
 
-module.exports = String
+module.exports = new String()

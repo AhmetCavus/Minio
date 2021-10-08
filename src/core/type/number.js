@@ -2,4 +2,4 @@ const BaseType = require("./basetype")
 
 class Number extends BaseType {}
 
-module.exports = Number
+module.exports = new Number()

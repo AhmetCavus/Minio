@@ -1,6 +1,6 @@
 {
   "name": "minio-cms",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "A lightweight sandbox project providing features like authentication and socket communication",
   "main": "app.js",
   "dependencies": {

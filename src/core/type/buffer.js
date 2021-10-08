@@ -2,4 +2,4 @@ const BaseType = require("./basetype")
 
 class Buffer extends BaseType {}
 
-module.exports = Buffer
+module.exports = new Buffer()
