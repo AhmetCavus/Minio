@@ -87,6 +87,35 @@ class CollectionRepository {
     })
   }
 
+  recursiveAddItems(schema, content, items) {
+    return new Promise(async (resolve, reject) => {
+      if(items.length > 0) {
+        let itemName = items.pop()
+        this
+        .addItem(itemName, content[itemName])
+        .then(async item => {
+          content[itemName] = item.id
+          let result =  await this.recursiveAddItems(schema, content, items)
+          resolve(result)
+        })
+        .catch(err => {
+          let res = { success: false, error: err }
+          reject(res)
+        })
+      } else {
+        this
+        .addItem(schema, content)
+        .then(item => {
+          resolve(item)
+        })
+        .catch(err => {
+          let res = { success: false, error: err }
+          reject(res)
+        })
+      }
+    })
+  }
+
   updateItem(schema, id, content) {
     return new Promise((resolve, reject) => {
       if (schema && content) {
@@ -112,8 +141,8 @@ class CollectionRepository {
                 resolve(updatedDoc)
               }
             })
-        } catch (e) {
-          var res = { success: false, error: e }
+        } catch (err) {
+          let res = { success: false, error: err }
           reject(res)
         }
       } else {

@@ -29,15 +29,28 @@ exports.updateCollection = (req, res) => {
 }
 
 exports.addCollectionItem = (req, res) => {
-  collectionRepo
-    .addItem(req.params.schema, req.body)
-    .then(item => {
-      res.status(200).json(item)
-      pubSubService.notifyAddCollectionItem(req.params.schema, item)
-    })
-    .catch(error => {
-      res.status(400).json(responseService.createFail("error", error))
-    })
+  if(req.query.recursiveCreate) {
+    let itemsToAdd = req.query.recursiveCreate.split(" ")
+    collectionRepo
+      .recursiveAddItems(req.params.schema, req.body, itemsToAdd)
+      .then(item => {
+        res.status(200).json(item)
+        pubSubService.notifyAddCollectionItem(req.params.schema, item)
+      })
+      .catch(error => {
+        res.status(400).json(responseService.createFail("error", error))
+      })
+  } else {
+    collectionRepo
+      .addItem(req.params.schema, req.body)
+      .then(item => {
+        res.status(200).json(item)
+        pubSubService.notifyAddCollectionItem(req.params.schema, item)
+      })
+      .catch(error => {
+        res.status(400).json(responseService.createFail("error", error))
+      })
+  }
 }
 
 exports.updateCollectItem = (req, res) => {
