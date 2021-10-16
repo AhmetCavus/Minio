@@ -102,7 +102,6 @@ class MinioApp {
     app.use("/admin", authMiddleware, adminRoutes)
     app.use("/collection", authMiddleware, collectionRoutes)
     app.use("/channel", authMiddleware, channelRoutes)
-    module.exports.instance = this
   }
 
   /**
@@ -135,6 +134,10 @@ class MinioApp {
    */
   setting(callback) {
     callback(app, express)
+  }
+
+  schemas() {
+    return this.collections.map(c => c.collectionName)
   }
 
   broadcast(message, channel) {

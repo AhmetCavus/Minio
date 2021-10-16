@@ -2,6 +2,8 @@ const SOCKET = require("../services/socket.key")
 const ERROR = require("../services/error.key")
 const resolveSchema = Symbol("resolveSchema")
 const _ = require("lodash")
+const CollectionHelper = require("./../helper/collection.helper")
+const { isUndefined, isEmpty } = require("lodash")
 
 class CollectionRepository {
   update(schema, content) {
@@ -87,31 +89,20 @@ class CollectionRepository {
     })
   }
 
-  recursiveAddItems(schema, content, items) {
+  async recursiveAddItems(schema, content, children) {
     return new Promise(async (resolve, reject) => {
-      if(items.length > 0) {
-        let itemName = items.pop()
-        this
-        .addItem(itemName, content[itemName])
-        .then(async item => {
-          content[itemName] = item.id
-          let result =  await this.recursiveAddItems(schema, content, items)
-          resolve(result)
-        })
-        .catch(err => {
-          let res = { success: false, error: err }
-          reject(res)
-        })
-      } else {
-        this
-        .addItem(schema, content)
-        .then(item => {
-          resolve(item)
-        })
-        .catch(err => {
-          let res = { success: false, error: err }
-          reject(res)
-        })
+      if(_.isEmpty(content)) return
+
+      try {
+        for (const child of children) {
+          let subChildren = CollectionHelper.resolveSubSchemasFromBody(content[child])
+          let createdItem = await this.recursiveAddItems(child, content[child], subChildren)
+          content[child] = createdItem.id
+        }
+        let createdItem = await this.addItem(schema, content)
+        resolve(createdItem)
+      } catch (error) {
+        reject(error)        
       }
     })
   }
@@ -152,6 +143,40 @@ class CollectionRepository {
           key: SOCKET.COMMAND_COLLECTION_UPDATE_ITEM,
         }
         reject(res)
+      }
+    })
+  }
+
+  async recursiveUpdateItems(schema, id, content, children) {
+    return new Promise(async (resolve, reject) => {
+      if(_.isEmpty(content)) return
+      const collection = await this.getCollection(schema)
+      const itemFromDb = _(collection).first(item => item.id === id)
+      const contentWithIds = {...content}
+      for (const child of children) {
+        const childContent = content[child]
+        if(!isEmpty(childContent.id)) {
+          contentWithIds[child] = childContent.id
+        }
+        else if(isUndefined(itemFromDb[child])) {
+          const subChildren = CollectionHelper.resolveSubSchemasFromBody(childContent)
+          const createdChild = await this.recursiveAddItems(child, childContent, subChildren)
+          itemFromDb[child] = createdChild.id
+          contentWithIds[child] = itemFromDb[child]
+        } else {
+          contentWithIds[child] = itemFromDb[child]
+        }
+      }
+      try {
+        let updatedItem = await this.updateItem(schema, id, contentWithIds)
+        for (const child of children) {
+          let subChildren = CollectionHelper.resolveSubSchemasFromBody(content[child])
+          let updatedChildItem = await this.recursiveUpdateItems(child, updatedItem[child], content[child], subChildren)
+          content[child] = updatedChildItem
+        }
+        resolve(updatedItem)
+      } catch (error) {
+        reject(error)        
       }
     })
   }
@@ -225,7 +250,7 @@ class CollectionRepository {
 
   [resolveSchema](schema) {
     const Minio = require("../minio.app")
-    const Schema = Minio.instance.collection(schema)
+    const Schema = Minio.Instance.collection(schema)
     if (!Schema) {
       throw new Error(`No schema named ${schema} registered.`)
     }

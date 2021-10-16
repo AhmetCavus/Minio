@@ -1,6 +1,8 @@
-﻿const pubSubService = require("../services/pubsub.service")
+﻿const _ = require("lodash")
+const pubSubService = require("../services/pubsub.service")
 const collectionRepo = require("../repositories/collection.repository")
 const responseService = require("../services/response.service")
+const CollectionHelper = require("./../helper/collection.helper")
 
 exports.getCollection = (req, res) => {
   collectionRepo
@@ -29,33 +31,22 @@ exports.updateCollection = (req, res) => {
 }
 
 exports.addCollectionItem = (req, res) => {
-  if(req.query.recursiveCreate) {
-    let itemsToAdd = req.query.recursiveCreate.split(" ")
-    collectionRepo
-      .recursiveAddItems(req.params.schema, req.body, itemsToAdd)
-      .then(item => {
-        res.status(200).json(item)
-        pubSubService.notifyAddCollectionItem(req.params.schema, item)
-      })
-      .catch(error => {
-        res.status(400).json(responseService.createFail("error", error))
-      })
-  } else {
-    collectionRepo
-      .addItem(req.params.schema, req.body)
-      .then(item => {
-        res.status(200).json(item)
-        pubSubService.notifyAddCollectionItem(req.params.schema, item)
-      })
-      .catch(error => {
-        res.status(400).json(responseService.createFail("error", error))
-      })
-  }
+  let children = CollectionHelper.resolveSubSchemasFromBody(req.body)
+  collectionRepo
+    .recursiveAddItems(req.params.schema, req.body, children)
+    .then(item => {
+      res.status(200).json(item)
+      pubSubService.notifyAddCollectionItem(req.params.schema, item)
+    })
+    .catch(error => {
+      res.status(400).json(responseService.createFail("error", error))
+    })
 }
 
 exports.updateCollectItem = (req, res) => {
+  let children = CollectionHelper.resolveSubSchemasFromBody(req.body)
   collectionRepo
-    .updateItem(req.params.schema, req.params.id, req.body)
+    .recursiveUpdateItems(req.params.schema, req.params.id, req.body, children)
     .then(result => {
       res.status(200).json(result)
       pubSubService.notifyUpdateCollectionItem(req.params.schema, result)
