@@ -30,14 +30,14 @@ class ProfileRepository {
   }
 
   create(newProfile) {
-    const { name, password, email, role } = newProfile
+    const { username, password, email, role } = newProfile
     return new Promise((resolve, reject) => {
       const saltRounds = 11
       bcrypt
         .hash(password, saltRounds)
         .then(hashPass => {
           return Profile.model.create({
-            name: name,
+            username: username,
             password: hashPass,
             email: email,
             role: role,

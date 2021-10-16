@@ -14,7 +14,7 @@ class AuthService {
     if (isMatch) {
       return tokenService.sign({
         id: profile._id.toString(),
-        name: profile.name,
+        username: profile.username,
         email: profile.email,
       })
     } else {
@@ -32,7 +32,7 @@ class AuthService {
       })
       return tokenService.sign({
         id: profile._id.toString(),
-        name: profile.name,
+        username: profile.username,
         email: profile.email,
       })
     } else {

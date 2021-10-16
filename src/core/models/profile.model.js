@@ -2,9 +2,9 @@ const Collection = require("../collection")
 const Provider = require("../type/provider")
 
 const ProfileModel = new Collection("Profile", {
-  name: { type: Provider.String, required: true },
+  username: { type: Provider.String, required: true },
   email: { type: Provider.String, required: true },
-  password: Provider.String,
+  password: { type: Provider.String, required: true },
   role: Provider.String,
   isOnline: Provider.Boolean,
   connectedSince: Provider.Date,
