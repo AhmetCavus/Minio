@@ -8,7 +8,19 @@ exports.getCollection = (req, res) => {
   collectionRepo
     .getCollection(
       req.params.schema,
-      req.params.relations === undefined ? "" : req.params.relations,
+      req.query.isJson,
+      req.query.createdAt
+    )
+    .then(collection => res.status(200).json(collection))
+    .catch(error => {
+      res.status(400).json(responseService.createFail("error", error.message))
+    })
+}
+
+exports.getPopulatedCollection = (req, res) => {
+  collectionRepo
+    .getPopulatedCollection(
+      req.params.schema,
       req.query.isJson,
       req.query.createdAt
     )
