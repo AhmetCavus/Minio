@@ -213,7 +213,7 @@ class CollectionRepository {
     })
   }
 
-  getCollection(schema, relations, isJson, date) {
+  getCollection(schema, isJson, date) {
     return new Promise((resolve, reject) => {
       if (schema) {
         try {
@@ -223,8 +223,43 @@ class CollectionRepository {
             filter = { createdAt: { $gte: new Date(date) } }
           Schema.model
             .find(filter)
-            .select()
-            .populate(relations)
+            .select('-__v')
+            .exec((err, items) => {
+              if (err) {
+                reject(err)
+              } else {
+                let result = {}
+                if(isJson) {
+                  result = _(items).map(i => { return { json: JSON.stringify(i) }})
+                } else {
+                  result = items
+                }
+                resolve(result)
+              }
+            })
+        } catch (err) {
+          reject(err)
+        }
+      } else {
+        var err = { error: ERROR.PARAMETERS_INVALID }
+        reject(err)
+      }
+    })
+  }
+
+  getPopulatedCollection(schema, isJson, date) {
+    return new Promise((resolve, reject) => {
+      if (schema) {
+        try {
+          const Schema = this[resolveSchema](schema)
+          const populationOption = CollectionHelper.resolveReferencesFromSchema(schema, this[resolveSchema])
+          let filter = {}
+          if (date !== undefined)
+            filter = { createdAt: { $gte: new Date(date) } }
+          Schema.model
+            .find(filter)
+            .select('-__v')
+            .populate(populationOption)
             .exec((err, items) => {
               if (err) {
                 reject(err)
