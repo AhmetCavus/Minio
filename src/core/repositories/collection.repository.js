@@ -1,8 +1,10 @@
-const SOCKET = require("../services/socket.key")
-const ERROR = require("../services/error.key")
 const resolveSchema = Symbol("resolveSchema")
+const findItem = Symbol("findItem")
+
+const ERROR = require("../services/error.key")
 const _ = require("lodash")
 const CollectionHelper = require("./../helper/collection.helper")
+const responseService = require("./../services/response.service")
 const { isUndefined, isEmpty } = require("lodash")
 
 class CollectionRepository {
@@ -19,32 +21,20 @@ class CollectionRepository {
           const Schema = this[resolveSchema](schema)
           Schema.model.remove(err => {
             if (err)
-              reject({
-                success: false,
-                message: err,
-                key: SOCKET.COMMAND_UPDATE,
-              })
+              reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
             else {
               Schema.model.insertMany(content, (err, docs) => {
                 if (err)
-                  reject({
-                    success: false,
-                    error: e,
-                    key: SOCKET.COMMAND_UPDATE,
-                  })
+                  reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
                 else resolve(docs)
               })
             }
           })
-        } catch (e) {
-          reject({ success: false, error: e, key: SOCKET.COMMAND_UPDATE })
+        } catch (err) {
+          reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
         }
       } else {
-        reject({
-          success: false,
-          error: ERROR.PARAMETERS_INVALID,
-          key: SOCKET.COMMAND_UPDATE,
-        })
+        reject(responseService.createFailContent(err, ERROR.PARAMETERS_INVALID))
       }
     })
   }
@@ -64,27 +54,23 @@ class CollectionRepository {
           var newItem = new Schema.model(content)
           newItem.save((err, doc) => {
             if (err) {
-              var res = {
-                success: false,
-                message: err,
-                key: SOCKET.COMMAND_COLLECTION_ADD_ITEM,
+              if(err.code === ERROR.DB_DUPLICATE_KEY_ERROR) {
+                this[findItem](schema, err.keyValue)
+                  .then(doc => { resolve(doc) })
+                  .catch(err => reject(responseService.createFailContent(err, ERROR.CREATE_FAILED))) 
+              } else {
+                reject(responseService.createFailContent(err, ERROR.CREATE_FAILED))
               }
-              reject(res)
-            } else {
+          } else {
               resolve(doc)
             }
           })
         } catch (e) {
-          var res = { success: false, message: e }
+          var res = { message: e }
           reject(res)
         }
       } else {
-        var res = {
-          success: false,
-          message: ERROR.PARAMETERS_INVALID,
-          key: SOCKET.COMMAND_COLLECTION_ADD_ITEM,
-        }
-        reject(res)
+        reject(responseService.createFailContent(err, ERROR.PARAMETERS_INVALID))
       }
     })
   }
@@ -101,8 +87,8 @@ class CollectionRepository {
         }
         let createdItem = await this.addItem(schema, content)
         resolve(createdItem)
-      } catch (error) {
-        reject(error)        
+      } catch (err) {
+        reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))       
       }
     })
   }
@@ -122,12 +108,7 @@ class CollectionRepository {
             .findOneAndUpdate({ _id: id }, content, { new: true })
             .exec((err, updatedDoc) => {
               if (err) {
-                var res = {
-                  success: false,
-                  error: err,
-                  key: SOCKET.COMMAND_COLLECTION_UPDATE_ITEM,
-                }
-                reject(res)
+                reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
               } else {
                 resolve(updatedDoc)
               }
@@ -137,12 +118,7 @@ class CollectionRepository {
           reject(res)
         }
       } else {
-        var res = {
-          success: false,
-          error: ERROR.PARAMETERS_INVALID,
-          key: SOCKET.COMMAND_COLLECTION_UPDATE_ITEM,
-        }
-        reject(res)
+        reject(responseService.createFailContent(err, ERROR.PARAMETERS_INVALID))
       }
     })
   }
@@ -175,8 +151,8 @@ class CollectionRepository {
           content[child] = updatedChildItem
         }
         resolve(updatedItem)
-      } catch (error) {
-        reject(error)        
+      } catch (err) {
+        reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))     
       }
     })
   }
@@ -188,32 +164,21 @@ class CollectionRepository {
           const Schema = this[resolveSchema](schema)
           Schema.model.findOneAndRemove({ _id: id }).exec((err, result) => {
             if (err) {
-              var res = {
-                success: false,
-                error: err,
-                key: SOCKET.COMMAND_COLLECTION_REMOVE_ITEM,
-              }
-              reject(res)
+              reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
             } else {
               resolve(result)
             }
           })
-        } catch (e) {
-          var res = { success: false, error: e }
-          reject(res)
+        } catch (err) {
+          reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
         }
       } else {
-        var res = {
-          success: false,
-          error: ERROR.PARAMETERS_INVALID,
-          key: SOCKET.COMMAND_COLLECTION_REMOVE_ITEM,
-        }
-        reject(res)
+        reject(responseService.createFailContent(undefined, ERROR.PARAMETERS_INVALID))
       }
     })
   }
 
-  getCollection(schema, isJson, date) {
+  getCollection(schema, date) {
     return new Promise((resolve, reject) => {
       if (schema) {
         try {
@@ -226,28 +191,21 @@ class CollectionRepository {
             .select('-__v')
             .exec((err, items) => {
               if (err) {
-                reject(err)
+                reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
               } else {
-                let result = {}
-                if(isJson) {
-                  result = _(items).map(i => { return { json: JSON.stringify(i) }})
-                } else {
-                  result = items
-                }
-                resolve(result)
+                resolve(items)
               }
             })
         } catch (err) {
-          reject(err)
+          reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
         }
       } else {
-        var err = { error: ERROR.PARAMETERS_INVALID }
-        reject(err)
+        reject(responseService.createFailContent(undefined, ERROR.PARAMETERS_INVALID))
       }
     })
   }
 
-  getPopulatedCollection(schema, isJson, date) {
+  getPopulatedCollection(schema, date) {
     return new Promise((resolve, reject) => {
       if (schema) {
         try {
@@ -262,23 +220,95 @@ class CollectionRepository {
             .populate(populationOption)
             .exec((err, items) => {
               if (err) {
-                reject(err)
+                reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
               } else {
-                let result = {}
-                if(isJson) {
-                  result = _(items).map(i => { return { json: JSON.stringify(i) }})
-                } else {
-                  result = items
-                }
-                resolve(result)
+                resolve(items)
               }
             })
         } catch (err) {
-          reject(err)
+          reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
         }
       } else {
-        var err = { error: ERROR.PARAMETERS_INVALID }
-        reject(err)
+        reject(responseService.createFailContent(undefined, ERROR.PARAMETERS_INVALID))
+      }
+    })
+  }
+
+  getItem(schema, id) {
+    return new Promise((resolve, reject) => {
+      if (schema && id) {
+        try {
+          const Schema = this[resolveSchema](schema)
+          Schema
+            .model
+            .findOne({ _id: id })
+            .select('-__v')
+            .exec((err, result) => {
+              if (err) {
+                reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
+              } else {
+                resolve(result)
+              }
+          })
+        } catch (err) {
+          reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
+        }
+      } else {
+        reject(responseService.createFailContent(undefined, ERROR.PARAMETERS_INVALID))
+      }
+    })
+  }
+
+  getPopulatedItem(schema, id) {
+    return new Promise((resolve, reject) => {
+      if (schema && id) {
+        try {
+          const Schema = this[resolveSchema](schema)
+          const populationOption = CollectionHelper.resolveReferencesFromSchema(schema, this[resolveSchema])
+          Schema
+            .model
+            .findOne({ _id: id })
+            .select('-__v')
+            .populate(populationOption)
+            .exec((err, result) => {
+              if (err) {
+                reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
+              } else {
+                resolve(result)
+              }
+          })
+        } catch (err) {
+          reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
+        }
+      } else {
+        reject(responseService.createFailContent(undefined, ERROR.PARAMETERS_INVALID))
+      }
+    })
+  }
+
+  [findItem](schema, findOptions) {
+    return new Promise((resolve, reject) => {
+      if (schema && findOptions) {
+        try {
+          const Schema = this[resolveSchema](schema)
+          const populationOption = CollectionHelper.resolveReferencesFromSchema(schema, this[resolveSchema])
+          Schema
+            .model
+            .findOne(findOptions)
+            .select('-__v')
+            .populate(populationOption)
+            .exec((err, result) => {
+              if (err) {
+                reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
+              } else {
+                resolve(result)
+              }
+          })
+        } catch (err) {
+          reject(responseService.createFailContent(err, ERROR.RUNTIME_EXCEPTION))
+        }
+      } else {
+        reject(responseService.createFailContent(undefined, ERROR.PARAMETERS_INVALID))
       }
     })
   }

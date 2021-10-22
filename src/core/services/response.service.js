@@ -21,6 +21,16 @@
     res.success = false
     return res
   }
+
+  createFailContent(err, fallback) {
+    return {
+      name: err?.name || fallback.name,
+      code: err?.code || fallback.code,
+      message: err?.message || fallback.message,
+    }
+  }
+
 }
+
 
 module.exports = new ResponseService()

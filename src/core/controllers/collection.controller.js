@@ -79,3 +79,25 @@ exports.removeCollectionItem = (req, res) => {
       res.status(400).json(responseService.createFail("error", error))
     })
 }
+
+exports.getCollectionItem = (req, res) => {
+  collectionRepo
+    .getItem(req.params.schema, req.params.id)
+    .then(item => {
+      res.status(200).json(item)
+    })
+    .catch(error => {
+      res.status(400).json(responseService.createFail("error", error))
+    })
+  }
+
+exports.getPopulatedCollectionItem = (req, res) => {
+  collectionRepo
+    .getPopulatedItem(req.params.schema, req.params.id)
+    .then(item => {
+      res.status(200).json(item)
+    })
+    .catch(error => {
+      res.status(400).json(responseService.createFail("error", error))
+    })
+  }
