@@ -182,7 +182,7 @@ class MinioApp {
     this.dbService.registerCollections([Profile])
     if (await profileRepo.isInitialized()) return
     const result = await profileRepo.create({
-      name: 'admin',
+      username: 'admin',
       email: 'admin',
       password: 'admin',
       role: "Admin",
