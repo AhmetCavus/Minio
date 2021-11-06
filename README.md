@@ -43,11 +43,11 @@ or
 
 ### Configuration
 
-You have to provide an env file '.env' in your project root folder.
+You have to provide an env file '.env' in your project root folder. For securing the api and the socket connection, minio uses the JWT approach. To get more detail about JWT, you can dive into this link https://jwt.io/introduction.
 This file should contain following keys:
 
 ```
-MONGO_URI=mongodb://user:pass@host:port/collection?authSource=admin
+DB_URI=mongodb://user:pass@host:port/collection?authSource=admin
 JWT_SECRET=do.not.read.it.is.jwt.secret
 VERIFY_SIGNATURE=i.can.open.doors
 CLIENT_ID=alone.i.am.useless
@@ -57,12 +57,23 @@ SSL_CERT=e.g. /etc/domain-name/fullchain.pem
 IS_HTTPS=true/false
 ```
 
+| Key              | Description                                                                 | Sample                                    |
+| -----------      | :-------------------------------------------------------------------------  | :---------------------------------------- |
+| DB_URI           | The url of the db provider. Currently, only the MongoDb engine is supported | mongodb://user:pass@host:port/collection?authSource=admin |
+| JWT_SECRET       | The secret id for generating the jwt tokens.                                | do.not.read.it.is.jwt.secret |
+| VERIFY_SIGNATURE | This is applied for provided tokens in the header. If a token cannot be verified with the signature, than it's invalid. Can be any kind of a string value | i.can.open.doors |
+| CLIENT_ID        | The id that a client had to use in the header in order to be granted for requests. Must be provided in combination with the secret id | alone.i.am.useless |
+| SECRET_ID        | The secret that a client had to use in the header in order to be granted for requests. Must be provided in combination with the client id | do.not.read.it.is.client.secret |
+| SSL_KEY          | If using HTTPS, than the path of the SSL_KEY had to be specified  | /etc/domain-name/privkey.pem |
+| SSL_CERT         | If using HTTPS, than the path of the SSL_CERT had to be specified | /etc/domain-name/fullchain.pem |
+| IS_HTTPS         | If enabled, activates https per default. It's recommended to enable this flag | true or false |
+
 Be aware of commiting this file in your repo!!!
 
 ### Usage
 
 ```nodejs
-const Minio = require("../src/core/minio.app")
+const Minio = require("minio-cms")
 
 const minio = new Minio.App()
 
