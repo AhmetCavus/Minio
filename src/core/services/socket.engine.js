@@ -41,7 +41,8 @@ class SocketEngine {
     }
   }
 
-  broadCast(data, channel) {
+  broadCast(data, channelName) {
+    const channel = this[getOrCreateChannel](channelName.toLowerCase())
     channel.emit(SOCKET.EVENT_RECEIVE_BROADCAST, data)
   }
 
