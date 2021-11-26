@@ -42,12 +42,12 @@ class SocketEngine {
   }
 
   broadCast(data, channelName) {
-    const channel = this[getOrCreateChannel](channelName.toLowerCase())
+    const channel = this[getOrCreateChannel](channelName.toString().toLowerCase())
     channel.emit(SOCKET.EVENT_RECEIVE_BROADCAST, data)
   }
 
   createChannel(channelName) {
-    const channel = this[getOrCreateChannel](channelName.toLowerCase())
+    const channel = this[getOrCreateChannel](channelName.toString().toLowerCase())
     if (channel && !channel.initialized) {
       // Consider to use channel.once to avoid multiple events
       channel.on(SOCKET.EVENT_CONNECTION, socket => {
